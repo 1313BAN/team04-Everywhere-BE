@@ -1,7 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.user.service;
 
 import com.ssafy.enjoytrip.everywhere.user.dto.request.SignupRequest;
-import com.ssafy.enjoytrip.everywhere.user.entity.User;
+import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 import com.ssafy.enjoytrip.everywhere.user.mapper.UserMapper;
 import com.ssafy.enjoytrip.everywhere.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserEntityServiceTest {
 
     @Mock private UserRepository userRepository;
     @Mock private UserMapper userMapper;
@@ -39,15 +39,15 @@ class UserServiceTest {
             given(userRepository.existsByUserId(validRequest.userId()))
                     .willReturn(false);
 
-            User mockUser = mock(User.class);
-            given(userMapper.toEntity(validRequest)).willReturn(mockUser);
-            given(userRepository.save(mockUser)).willReturn(mockUser);
+            UserEntity mockUserEntity = mock(UserEntity.class);
+            given(userMapper.toEntity(validRequest)).willReturn(mockUserEntity);
+            given(userRepository.save(mockUserEntity)).willReturn(mockUserEntity);
 
             // when & then
             assertThatCode(() -> userService.signup(validRequest))
                     .doesNotThrowAnyException();
 
-            then(userRepository).should().save(mockUser);
+            then(userRepository).should().save(mockUserEntity);
         }
     }
 

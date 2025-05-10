@@ -1,8 +1,9 @@
 package com.ssafy.enjoytrip.everywhere.user.mapper;
 
+import com.ssafy.enjoytrip.everywhere.auth.domain.User;
 import com.ssafy.enjoytrip.everywhere.common.constants.Role;
 import com.ssafy.enjoytrip.everywhere.user.dto.request.SignupRequest;
-import com.ssafy.enjoytrip.everywhere.user.entity.User;
+import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,12 +13,21 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     private final PasswordEncoder passwordEncoder;
 
-    public User toEntity(SignupRequest request) {
-        return User.builder()
+    public UserEntity toEntity(SignupRequest request) {
+        return UserEntity.builder()
                 .userId(request.userId())
                 .password(passwordEncoder.encode(request.password()))
                 .nickname(request.nickname())
                 .role(Role.USER)
                 .build();
+    }
+
+    public User toDomain(UserEntity entity) {
+        return new User(
+                entity.getUserId(),
+                entity.getPassword(),
+                entity.getNickname(),
+                entity.getRole()
+        );
     }
 }

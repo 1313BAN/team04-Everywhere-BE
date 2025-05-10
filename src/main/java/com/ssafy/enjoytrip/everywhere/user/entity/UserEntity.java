@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity {
+public class UserEntity extends BaseEntity {
 
     @Id
     @Column(name = "user_id")
@@ -33,7 +33,7 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     @Builder
-    public User(String userId, String password, String nickname, Role role) {
+    public UserEntity(String userId, String password, String nickname, Role role) {
         this.userId = userId;
         this.password = password;
         this.nickname = nickname;
@@ -43,4 +43,5 @@ public class User extends BaseEntity {
     public boolean isPasswordMatch(String rawPassword, PasswordEncoder encoder) {
         return encoder.matches(rawPassword, this.password);
     }
+
 }

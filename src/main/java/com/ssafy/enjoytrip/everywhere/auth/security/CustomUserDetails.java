@@ -1,26 +1,26 @@
 package com.ssafy.enjoytrip.everywhere.auth.security;
 
-import com.ssafy.enjoytrip.everywhere.user.entity.User;
+import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
-public record CustomUserDetails(User user) implements UserDetails {
+public record CustomUserDetails(UserEntity userEntity) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_" + user.getRole().name());
+        return List.of(() -> "ROLE_" + userEntity.getRole().name());
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return userEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUserId();
+        return userEntity.getUserId();
     }
 
     @Override
