@@ -4,6 +4,7 @@ import com.ssafy.enjoytrip.everywhere.auth.domain.Authenticator;
 import com.ssafy.enjoytrip.everywhere.auth.dto.request.LoginRequest;
 import com.ssafy.enjoytrip.everywhere.auth.dto.response.LoginResponse;
 import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtTokenProvider;
+import com.ssafy.enjoytrip.everywhere.common.constants.ErrorCode;
 import com.ssafy.enjoytrip.everywhere.common.exception.InvalidTokenException;
 import com.ssafy.enjoytrip.everywhere.user.entity.User;
 import com.ssafy.enjoytrip.everywhere.user.repository.UserRepository;
@@ -85,7 +86,7 @@ class AuthServiceTest {
         void password_mismatch() {
             // given
             given(userRepository.findById("user1")).willReturn(Optional.of(testUser));
-            willThrow(new InvalidTokenException("아이디 또는 비밀번호가 올바르지 않습니다."))
+            willThrow(new InvalidTokenException(ErrorCode.INVALID_CREDENTIALS))
                     .given(authenticator).verifyPassword(testUser, "password123");
 
             // when & then
