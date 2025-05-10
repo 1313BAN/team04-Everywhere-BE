@@ -10,7 +10,7 @@ public record CustomUserDetails(UserEntity userEntity) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_" + userEntity.getRole().name());
+        return List.of(() -> SecurityConstants.ROLE + userEntity.getRole().name());
     }
 
     @Override

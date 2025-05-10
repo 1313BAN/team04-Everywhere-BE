@@ -1,92 +1,65 @@
 package com.ssafy.enjoytrip.everywhere.auth.jwt;
 
+import com.ssafy.enjoytrip.everywhere.auth.domain.User;
 import com.ssafy.enjoytrip.everywhere.auth.security.SecurityConstants;
-import com.ssafy.enjoytrip.everywhere.common.constants.ErrorCode;
-import com.ssafy.enjoytrip.everywhere.common.exception.InvalidTokenException;
-import com.ssafy.enjoytrip.everywhere.user.entity.User;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
-@Slf4j
-@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final String secretKey;
+    private SecretKey key;
 
-    private Key key;
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        byte[] bytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createAccessToken(User user) {
+    public JwtToken generateToken(User user) {
+        return JwtToken.builder()
+                .accessToken(generateAccessToken(user))
+                .refreshToken(generateRefreshToken(user))
+                .build();
+    }
+
+    public String generateAccessToken(User user) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + SecurityConstants.ACCESS_TOKEN_EXPIRY);
 
         return Jwts.builder()
-                .setSubject(user.getUserId())
-                .claim("role", user.getRole().name())
+                .setSubject(user.userId())
+                .claim(JwtConstants.CLAIM_TYPE.value(), JwtConstants.TOKEN_TYPE_ACCESS.value())
+                .claim(JwtConstants.CLAIM_NAME.value(), user.nickname())
+                .claim(JwtConstants.CLAIM_ROLE.value(), user.role().name())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .compact();
     }
 
-    public String resolveToken(HttpServletRequest request) {
-        String bearer = request.getHeader(SecurityConstants.HEADER_AUTH);
-        if (bearer != null && bearer.startsWith(SecurityConstants.TOKEN_PREFIX)) {
-            return bearer.substring(SecurityConstants.TOKEN_PREFIX.length());
-        }
-        return null;
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            log.warn("Invalid JWT token: {}", e.getMessage());
-            return false;
-        }
-    }
-
-    public String getUserId(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
-                .parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public void validateTokenOrThrow(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new InvalidTokenException(ErrorCode.TOKEN_INVALID);
-        }
-    }
-
-    public String createRefreshToken(User user) {
+    public String generateRefreshToken(User user) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + SecurityConstants.REFRESH_TOKEN_EXPIRY);
 
         return Jwts.builder()
-                .setSubject(user.getUserId())  // 또는 user.getId().toString()도 가능
+                .setSubject(user.userId())
+                .claim(JwtConstants.CLAIM_TYPE.value(), JwtConstants.TOKEN_TYPE_REFRESH.value())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)
                 .compact();
     }
-
 }
