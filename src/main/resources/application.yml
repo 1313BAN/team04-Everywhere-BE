@@ -9,6 +9,10 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  web:
+    resources:
+      static-locations: file:${user.home}/uploads/
+
 
 jwt:
   secret: ${JWT_SECRET_KEY}
