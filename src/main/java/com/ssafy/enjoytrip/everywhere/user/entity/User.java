@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "users")
@@ -39,7 +40,7 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
-    public void updateRefreshToken(String token) {
-        this.refreshToken = token;
+    public boolean isPasswordMatch(String rawPassword, PasswordEncoder encoder) {
+        return encoder.matches(rawPassword, this.password);
     }
 }
