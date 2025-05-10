@@ -23,7 +23,7 @@ public class AuthService {
     @Transactional
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new InvalidTokenException(ErrorCode.USER_NOT_FOUND.message()));
+                .orElseThrow(() -> new InvalidTokenException(ErrorCode.USER_NOT_FOUND));
 
         authenticator.verifyPassword(user, request.password());
         String accessToken = jwtTokenProvider.createAccessToken(user);

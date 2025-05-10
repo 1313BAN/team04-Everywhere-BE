@@ -15,7 +15,7 @@ public class Authenticator {
 
     public void verifyPassword(User user, String rawPassword) {
         if (!user.isPasswordMatch(rawPassword, passwordEncoder)) {
-            throw new InvalidTokenException(ErrorCode.INVALID_CREDENTIALS.message());
+            throw new InvalidTokenException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
 }
