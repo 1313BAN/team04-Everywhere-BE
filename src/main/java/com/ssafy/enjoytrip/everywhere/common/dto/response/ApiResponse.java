@@ -16,8 +16,8 @@ public record ApiResponse<T>(
         return new ApiResponse<>(Status.SUCCESS, SuccessCode.SUCCESS_DEFAULT, null);
     }
 
-    public static <T> ApiResponse<T> error(Enum<?> code) {
-        return new ApiResponse<>(Status.ERROR, code, null);
+    public static ApiResponse<String> error(Enum<?> code, String message) {
+        return new ApiResponse<>(Status.ERROR, code, message);
     }
 
     public static <T> ApiResponse<T> success(Enum<?> code) {
