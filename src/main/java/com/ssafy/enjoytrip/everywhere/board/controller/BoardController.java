@@ -18,6 +18,7 @@ import com.ssafy.enjoytrip.everywhere.board.dto.response.BoardListResponse;
 import com.ssafy.enjoytrip.everywhere.board.service.BoardService;
 import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -47,6 +48,7 @@ public class BoardController {
 	}
 
 	@PutMapping("/{id}")
+	@Transactional
 	public ApiResponse<BoardDetailResponse> update(@PathVariable Long id,
 		@ModelAttribute BoardModifyRequest request,
 		@RequestHeader("Authorization") String token) {
