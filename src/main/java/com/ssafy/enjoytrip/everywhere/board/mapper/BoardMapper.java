@@ -20,7 +20,7 @@ public class BoardMapper {
 			board.getId(),
 			board.getTitle(),
 			board.getWriter().getNickname(),
-			board.getCreatedAt().toString()
+			board.getCreatedAt()
 		);
 	}
 
@@ -47,7 +47,7 @@ public class BoardMapper {
 			board.getContent(),
 			board.getWriter().getNickname(),
 			board.getImageUrls(),
-			board.getCreatedAt().toString()
+			board.getCreatedAt()
 		);
 	}
 
