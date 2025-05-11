@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.ssafy.enjoytrip.everywhere.common.constants.ErrorCode;
 import com.ssafy.enjoytrip.everywhere.common.constants.Role;
 import com.ssafy.enjoytrip.everywhere.common.exception.ApiException;
+import com.ssafy.enjoytrip.everywhere.user.domain.User;
 import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 import com.ssafy.enjoytrip.everywhere.user.mapper.UserMapper;
 import com.ssafy.enjoytrip.everywhere.user.repository.UserRepository;

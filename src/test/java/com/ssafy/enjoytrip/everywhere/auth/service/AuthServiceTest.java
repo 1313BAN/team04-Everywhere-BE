@@ -12,11 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ssafy.enjoytrip.everywhere.auth.domain.Authenticator;
-import com.ssafy.enjoytrip.everywhere.auth.domain.User;
 import com.ssafy.enjoytrip.everywhere.auth.dto.request.LoginRequest;
 import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtToken;
 import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtTokenProvider;
 import com.ssafy.enjoytrip.everywhere.common.constants.Role;
+import com.ssafy.enjoytrip.everywhere.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
