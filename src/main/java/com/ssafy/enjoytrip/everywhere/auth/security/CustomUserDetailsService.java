@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.auth.security;
 
-import com.ssafy.enjoytrip.everywhere.user.entity.User;
+import com.ssafy.enjoytrip.everywhere.common.constants.ErrorCode;
+import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 import com.ssafy.enjoytrip.everywhere.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +17,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorCode.USER_NOT_FOUND + userId));
 
-        return new CustomUserDetails(user);
+        return new CustomUserDetails(userEntity);
     }
 }

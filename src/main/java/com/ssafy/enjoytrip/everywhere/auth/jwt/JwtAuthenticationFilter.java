@@ -18,25 +18,25 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider tokenProvider;
+    private final JwtTokenResolver tokenResolver;
     private final CustomUserDetailsService userDetailsService;
+    private final JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-        String token = tokenProvider.resolveToken(request);
+        String bearer = request.getHeader(JwtConstants.AUTH_HEADER.value());
+        String token = tokenResolver.resolve(bearer);
 
-        if (token != null && tokenProvider.validateToken(token)) {
-            String userId = tokenProvider.getUserId(token);
-            var userDetails = userDetailsService.loadUserByUsername(userId);
+        String userId = jwtUtils.getUserId(token);
+        var userDetails = userDetailsService.loadUserByUsername(userId);
 
-            var auth = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
+        var auth = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
 
-            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
         chain.doFilter(request, response);
     }
