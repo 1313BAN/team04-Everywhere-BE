@@ -56,8 +56,8 @@ public class BoardService {
 		Board board = boardRepository.findById(id)
 			.orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
-		UserEntity writer = getUserOrThrow(userId);
-		if (!board.getWriter().equals(writer)) {
+		String writerId = boardRepository.findWriterUserIdByBoardId(id);
+		if (!writerId.equals(userId)) {
 			throw new ApiException(ErrorCode.NON_VALIDATED_USER);
 		}
 
