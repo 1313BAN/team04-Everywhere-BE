@@ -8,6 +8,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.ssafy.enjoytrip.everywhere.auth.config.PublicPath;
 import com.ssafy.enjoytrip.everywhere.auth.security.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
@@ -42,12 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		chain.doFilter(request, response);
 	}
-	
+
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		String path = request.getRequestURI();
-		return path.equals("/api/auth/login") ||
-			path.equals("/api/user/signup") ||
-			path.equals("/api/auth/refresh");
+		return PublicPath.matches(request.getRequestURI());
 	}
 }
