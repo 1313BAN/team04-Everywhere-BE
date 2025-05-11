@@ -1,34 +1,27 @@
 package com.ssafy.enjoytrip.everywhere.auth.jwt;
 
+import java.security.Key;
 import java.util.Date;
 
-import javax.crypto.SecretKey;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ssafy.enjoytrip.everywhere.auth.domain.User;
 import com.ssafy.enjoytrip.everywhere.auth.security.SecurityConstants;
+import com.ssafy.enjoytrip.everywhere.user.domain.User;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-	private final String secretKey;
-	private SecretKey key;
-
-	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-		this.secretKey = secretKey;
-	}
+	private final KeyManager keyManager;
+	private Key key;
 
 	@PostConstruct
 	public void init() {
-		byte[] bytes = Decoders.BASE64.decode(secretKey);
-		this.key = Keys.hmacShaKeyFor(bytes);
+		this.key = keyManager.getKey();
 	}
 
 	public JwtToken generateToken(User user) {
