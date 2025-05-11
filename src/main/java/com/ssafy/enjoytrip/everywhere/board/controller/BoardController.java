@@ -18,6 +18,7 @@ import com.ssafy.enjoytrip.everywhere.board.dto.response.BoardListResponse;
 import com.ssafy.enjoytrip.everywhere.board.service.BoardService;
 import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -39,7 +40,7 @@ public class BoardController {
 	}
 
 	@PostMapping
-	public ApiResponse<BoardDetailResponse> create(@ModelAttribute BoardCreateRequest request,
+	public ApiResponse<BoardDetailResponse> create(@Valid @ModelAttribute BoardCreateRequest request,
 		@RequestHeader("Authorization") String token) {
 		String userId = jwtUtils.getUserId(token);
 		return ApiResponse.success(service.create(request, userId));
