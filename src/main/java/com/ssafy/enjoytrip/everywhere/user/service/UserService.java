@@ -3,6 +3,7 @@ package com.ssafy.enjoytrip.everywhere.user.service;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.enjoytrip.everywhere.common.constants.ErrorCode;
+import com.ssafy.enjoytrip.everywhere.common.exception.ApiException;
 import com.ssafy.enjoytrip.everywhere.user.dto.request.SignupRequest;
 import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 import com.ssafy.enjoytrip.everywhere.user.mapper.UserMapper;
@@ -25,7 +26,7 @@ public class UserService {
 
 	private void validateDuplicatedUserId(String userId) {
 		if (userRepository.existsByUserId(userId)) {
-			throw new IllegalArgumentException(ErrorCode.DUPLICATED_USER_ID.message());
+			throw new ApiException(ErrorCode.DUPLICATED_USER_ID);
 		}
 	}
 }
