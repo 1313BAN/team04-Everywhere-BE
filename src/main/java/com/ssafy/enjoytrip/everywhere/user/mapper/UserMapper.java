@@ -3,8 +3,8 @@ package com.ssafy.enjoytrip.everywhere.user.mapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.ssafy.enjoytrip.everywhere.auth.domain.User;
 import com.ssafy.enjoytrip.everywhere.common.constants.Role;
+import com.ssafy.enjoytrip.everywhere.user.domain.User;
 import com.ssafy.enjoytrip.everywhere.user.dto.request.SignupRequest;
 import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 

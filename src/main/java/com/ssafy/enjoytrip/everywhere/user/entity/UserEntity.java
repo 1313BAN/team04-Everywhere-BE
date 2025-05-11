@@ -1,7 +1,5 @@
 package com.ssafy.enjoytrip.everywhere.user.entity;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.ssafy.enjoytrip.everywhere.common.constants.Role;
 import com.ssafy.enjoytrip.everywhere.common.entity.BaseEntity;
 
@@ -45,10 +43,6 @@ public class UserEntity extends BaseEntity {
 		this.password = password;
 		this.nickname = nickname;
 		this.role = role;
-	}
-
-	public boolean isPasswordMatch(String rawPassword, PasswordEncoder encoder) {
-		return encoder.matches(rawPassword, this.password);
 	}
 
 }

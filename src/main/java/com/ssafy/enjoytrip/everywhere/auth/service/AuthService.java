@@ -3,10 +3,10 @@ package com.ssafy.enjoytrip.everywhere.auth.service;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.enjoytrip.everywhere.auth.domain.Authenticator;
-import com.ssafy.enjoytrip.everywhere.auth.domain.User;
 import com.ssafy.enjoytrip.everywhere.auth.dto.request.LoginRequest;
 import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtToken;
 import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtTokenProvider;
+import com.ssafy.enjoytrip.everywhere.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
 

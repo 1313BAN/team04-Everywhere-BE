@@ -1,4 +1,4 @@
-package com.ssafy.enjoytrip.everywhere.auth.domain;
+package com.ssafy.enjoytrip.everywhere.user.domain;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
