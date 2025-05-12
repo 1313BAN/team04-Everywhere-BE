@@ -2,22 +2,26 @@ spring:
   application:
     name: everywhere
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/enjoytrip
+    username: ssafy
+    password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
   web:
     resources:
       static-locations: file:${user.home}/uploads/
 
-
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: ssafyjwtsecretkey1234ssafyjwtsecretkey1234ssafyjwtsecretkey1234
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
+
+server:
+  address: 0.0.0.0
+  port: 8080
