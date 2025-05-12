@@ -1,5 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.auth.service;
 
+import com.ssafy.enjoytrip.everywhere.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.enjoytrip.everywhere.auth.domain.Authenticator;
@@ -10,15 +12,20 @@ import com.ssafy.enjoytrip.everywhere.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class AuthService {
 
 	private final Authenticator authenticator;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final UserRepository userRepository; // ← 추가
 
 	public JwtToken login(LoginRequest request) {
 		User user = authenticator.authenticate(request.userId(), request.password());
-		return jwtTokenProvider.generateToken(user);
+		JwtToken token = jwtTokenProvider.generateToken(user);
+		userRepository.updateRefreshToken(user.userId(), token.getRefreshToken());
+
+		return token;
 	}
 }
