@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.everywhere.auth.jwt;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ public class KeyManager {
 	private final Key key;
 
 	public KeyManager(@Value("${jwt.secret}") String secretKey) {
-		byte[] bytes = Decoders.BASE64.decode(secretKey);
-		this.key = Keys.hmacShaKeyFor(bytes);
+		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+		this.key = Keys.hmacShaKeyFor(keyBytes);
 	}
 }

@@ -18,6 +18,7 @@ public enum PublicPath {
 
 	public static boolean matches(String requestPath) {
 		return Arrays.stream(values())
-			.anyMatch(endpoint -> endpoint.path.equals(requestPath));
+				.anyMatch(endpoint -> requestPath.startsWith(endpoint.path));
 	}
+
 }

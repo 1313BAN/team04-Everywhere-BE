@@ -2,6 +2,7 @@ package com.ssafy.enjoytrip.everywhere.auth.jwt;
 
 import java.security.Key;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.ssafy.enjoytrip.everywhere.common.constants.ErrorCode;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtUtils {
 
 	private final KeyManager keyManager;
@@ -24,12 +26,17 @@ public class JwtUtils {
 	}
 
 	public String getUserId(String token) {
-		return Jwts.parserBuilder().setSigningKey(key).build()
-			.parseClaimsJws(resolveToken(token)).getBody().getSubject();
+		return Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody()
+				.getSubject();
 	}
 
+
 	public String resolveToken(String bearerToken) {
-		if (bearerToken == null || bearerToken.isBlank()) {
+		if (bearerToken == null || bearerToken.isBlank() || !bearerToken.startsWith("Bearer ")) {
 			throw new ApiException(ErrorCode.TOKEN_INVALID);
 		}
 
