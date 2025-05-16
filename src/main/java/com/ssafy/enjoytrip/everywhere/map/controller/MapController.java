@@ -1,11 +1,11 @@
 package com.ssafy.enjoytrip.everywhere.map.controller;
 
-import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
+import com.ssafy.enjoytrip.everywhere.common.constants.SuccessCode;
+import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
+import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.service.MapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/map")
@@ -14,13 +14,15 @@ public class MapController {
 
     private final MapService mapService;
 
-    @GetMapping("/attractions")
-    public List<AttractionSimpleResponse> getAllAttractions() {
-        return mapService.getAllAttractions();
+    @GetMapping
+    public ApiResponse<AttractionsResponse> getAllAttractions() {
+        AttractionsResponse dto = new AttractionsResponse(mapService.getAllAttractions());
+        return ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, dto);
     }
 
     @GetMapping("/{contentTypeId}")
-    public List<AttractionSimpleResponse> getAttractionsByType(@PathVariable Integer contentTypeId) {
-        return mapService.getAttractionsByType(contentTypeId);
+    public ApiResponse<AttractionsResponse> getAttractionsByType(@PathVariable Integer contentTypeId) {
+        AttractionsResponse dto = new AttractionsResponse(mapService.getAttractionsByType(contentTypeId));
+        return ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_BY_TYPE, dto);
     }
 }
