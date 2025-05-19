@@ -23,12 +23,11 @@ public class MapService {
     }
 
     public AttractionsResponse getAttractionsByContentType(Integer contentTypeId) {
-        List<AttractionSimpleResponse> list = attractionRepository.findByContentTypeId(contentTypeId)
+        List<AttractionSimpleResponse> attractions = attractionRepository.findByContentTypeId(contentTypeId)
                 .stream()
-                .map(AttractionSimpleResponse::from)
+                .map(attractionMapper::toSimpleResponse)
                 .toList();
-
-        return new AttractionsResponse(list);
+        return new AttractionsResponse(attractions);
     }
 }
 
