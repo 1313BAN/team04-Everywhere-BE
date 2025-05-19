@@ -10,13 +10,12 @@ import lombok.*;
 public class Attraction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long no;
-
-    private Integer contentId;
+    @Column(name = "content_id")
+    private Long contentId;
 
     private String title;
 
+    @Column(name = "content_type_id")
     private Integer contentTypeId;
 
     private Double latitude;

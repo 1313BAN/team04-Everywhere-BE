@@ -24,7 +24,7 @@ public class MapService {
     public List<AttractionSimpleResponse> getAttractionsByType(Integer type) {
         return attractionRepository.findByContentTypeId(type).stream()
                 .map(p -> new AttractionSimpleResponse(
-                        p.getNo(), p.getContentId(), p.getTitle(),
+                        p.getContentId(), p.getTitle(),
                         p.getContentTypeId(), p.getLatitude(), p.getLongitude()))
                 .toList();
     }
