@@ -34,13 +34,4 @@ public class JwtUtils {
 				.getSubject();
 	}
 
-
-	public String resolveToken(String bearerToken) {
-		if (bearerToken == null || bearerToken.isBlank() || !bearerToken.startsWith("Bearer ")) {
-			throw new ApiException(ErrorCode.TOKEN_INVALID);
-		}
-
-		return bearerToken.startsWith(JwtConstants.TOKEN_PREFIX.value()) ? bearerToken.substring(7) : bearerToken;
-	}
-
 }
