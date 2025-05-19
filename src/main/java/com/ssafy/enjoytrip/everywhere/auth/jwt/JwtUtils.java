@@ -2,6 +2,7 @@ package com.ssafy.enjoytrip.everywhere.auth.jwt;
 
 import java.security.Key;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Getter
 public class JwtUtils {
 
 	private final KeyManager keyManager;

@@ -1,5 +1,14 @@
 package com.ssafy.enjoytrip.everywhere.auth.controller;
 
+import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtConstants;
+import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtTokenResolver;
+import com.ssafy.enjoytrip.everywhere.auth.jwt.JwtUtils;
+import com.ssafy.enjoytrip.everywhere.auth.jwt.blacklist.service.JwtBlacklistService;
+import com.ssafy.enjoytrip.everywhere.common.constants.ErrorCode;
+import com.ssafy.enjoytrip.everywhere.common.constants.SuccessCode;
+import com.ssafy.enjoytrip.everywhere.common.exception.ApiException;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,16 +24,42 @@ import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 	private final AuthService authService;
 	private final AuthMapper authMapper;
+	private final JwtTokenResolver tokenResolver;
+	private final JwtUtils jwtUtils;
+	private final JwtBlacklistService blacklistService;
 
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request) {
 		JwtToken token = authService.login(request);
 		return ResponseEntity.ok(ApiResponse.success(authMapper.toResponse(token)));
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
+		String bearer = request.getHeader(JwtConstants.AUTH_HEADER.value());
+		String token = tokenResolver.resolve(bearer);
+
+		if (token == null) {
+			throw new ApiException(ErrorCode.TOKEN_INVALID);
+		}
+
+		Date expiration = Jwts.parserBuilder()
+				.setSigningKey(jwtUtils.getKey())
+				.build()
+				.parseClaimsJws(token)
+				.getBody()
+				.getExpiration();
+
+		blacklistService.blacklist(token, expiration);
+
+		return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_LOGOUT));
 	}
 }

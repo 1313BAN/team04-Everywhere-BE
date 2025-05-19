@@ -8,7 +8,8 @@ public enum SuccessCode {
 	SIGNUP_SUCCESS(HttpStatus.CREATED, "회원가입에 성공했습니다."),
 	SUCCESS_GET_ATTRACTIONS(HttpStatus.OK, "전체 관광지 조회에 성공했습니다."),
 	SUCCESS_GET_ATTRACTIONS_BY_TYPE(HttpStatus.OK, "콘텐츠 타입별 관광지 조회에 성공했습니다."),
-	SUCCESS_GET_CONTENT_TYPES(HttpStatus.OK, "콘텐츠 타입 목록 조회에 성공했습니다.");
+	SUCCESS_GET_CONTENT_TYPES(HttpStatus.OK, "콘텐츠 타입 목록 조회에 성공했습니다."),
+	SUCCESS_LOGOUT(HttpStatus.OK, "로그아웃에 성공했습니다.");
 
 
 	private final HttpStatus code;

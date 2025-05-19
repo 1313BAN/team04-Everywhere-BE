@@ -12,7 +12,9 @@ public enum ErrorCode {
 
 	BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 	NON_VALIDATED_USER(HttpStatus.FORBIDDEN, "작성자만 수정 또는 삭제할 수 있습니다."),
-	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다.");
+	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+
+	TOKEN_BLACKLISTED(HttpStatus.UNAUTHORIZED, "블랙리스트 처리된 토큰입니다.");
 
 	private final HttpStatus status;
 	private final String message;
