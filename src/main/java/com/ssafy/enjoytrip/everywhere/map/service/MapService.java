@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.map.service;
 
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
+import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.mapper.AttractionMapper;
 import com.ssafy.enjoytrip.everywhere.map.repository.AttractionRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +22,13 @@ public class MapService {
                 .toList();
     }
 
-    public List<AttractionSimpleResponse> getAttractionsByType(Integer type) {
-        return attractionRepository.findByContentTypeId(type).stream()
-                .map(p -> new AttractionSimpleResponse(
-                        p.getContentId(), p.getTitle(),
-                        p.getContentTypeId(), p.getLatitude(), p.getLongitude()))
+    public AttractionsResponse getAttractionsByContentType(Integer contentTypeId) {
+        List<AttractionSimpleResponse> list = attractionRepository.findByContentTypeId(contentTypeId)
+                .stream()
+                .map(AttractionSimpleResponse::from)
                 .toList();
+
+        return new AttractionsResponse(list);
     }
 }
 
