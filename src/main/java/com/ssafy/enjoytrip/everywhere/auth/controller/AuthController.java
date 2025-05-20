@@ -31,7 +31,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AuthController {
 	private final AuthService authService;
-	private final AuthMapper authMapper;
 	private final JwtTokenResolver tokenResolver;
 	private final JwtUtils jwtUtils;
 	private final JwtBlacklistService blacklistService;
@@ -39,7 +38,10 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request) {
 		JwtToken token = authService.login(request);
-		return ResponseEntity.ok(ApiResponse.success(authMapper.toResponse(token)));
+		String nickname = jwtUtils.getNickname(token.getAccessToken());
+		LoginResponse response = new LoginResponse(token.getAccessToken(), token.getRefreshToken(), nickname);
+		return ResponseEntity.ok(ApiResponse.success(response));
+
 	}
 
 	@PostMapping("/logout")
