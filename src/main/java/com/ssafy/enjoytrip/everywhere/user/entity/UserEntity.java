@@ -36,7 +36,7 @@ public class UserEntity extends BaseEntity {
 	@Column(nullable = false)
 	private Role role;
 
-	@Column(length = 200)
+	@Column(length = 200, name = "refresh_token")
 	private String refreshToken;
 
 	@Builder
