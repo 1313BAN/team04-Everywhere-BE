@@ -3,16 +3,18 @@ package com.ssafy.enjoytrip.everywhere.map.dto.response;
 import com.ssafy.enjoytrip.everywhere.map.entity.Attraction;
 
 public record AttractionSimpleResponse(
-        Long contentId,
+        long contentId,
         String title,
-        Integer contentTypeId,
-        Double latitude,
-        Double longitude,
-        Integer areaCode,
-        Integer siGunGuCode,
-        Integer mapLevel,
+        int contentTypeId,
+        double latitude,
+        double longitude,
+        int areaCode,
+        int siGunGuCode,
+        int mapLevel,
         String tel,
-        String address
+        String address,
+        String firstImage,
+        String secondImage
 ) {
     public static AttractionSimpleResponse from(Attraction attraction) {
         return new AttractionSimpleResponse(
@@ -25,7 +27,9 @@ public record AttractionSimpleResponse(
                 attraction.getSiGunGuCode(),
                 attraction.getMapLevel(),
                 attraction.getTel(),
-                attraction.getAddress()
+                attraction.getAddress(),
+                attraction.getFirstImage(),
+                attraction.getSecondImage()
         );
     }
 }

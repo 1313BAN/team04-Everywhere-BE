@@ -16,7 +16,7 @@ public interface AttractionRepository extends JpaRepository<Attraction, Long> {
 
     @Query("SELECT new com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse(" +
             "a.contentId, a.title, a.contentTypeId, a.latitude, a.longitude, " +
-            "a.areaCode, a.siGunGuCode, a.mapLevel, a.tel, a.address) " +
+            "a.areaCode, a.siGunGuCode, a.mapLevel, a.tel, a.address, a.firstImage, a.secondImage) " +
             "FROM Attraction a " +
             "WHERE a.latitude BETWEEN :swLat AND :neLat " +
             "AND a.longitude BETWEEN :swLng AND :neLng")

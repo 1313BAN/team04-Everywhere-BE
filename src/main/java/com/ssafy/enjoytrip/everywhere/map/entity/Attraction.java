@@ -26,19 +26,14 @@ public class Attraction {
     private Integer siGunGuCode;
     private Integer mapLevel;
     private String tel;
+
     @Column(name = "addr1")
     private String address;
 
-    /**
-    area_code int
-    si_gun_gu_code int
-    first_image1 varchar(100)
-    first_image2 varchar(100)
-    map_level int
-    tel varchar(20)
-    addr1 varchar(100)
-    addr2 varchar(100)
-    category varchar(10) **/
+    @Column(name ="first_image1")
+    private String firstImage;
 
+    @Column(name ="first_image2")
+    private String secondImage;
 }
 
