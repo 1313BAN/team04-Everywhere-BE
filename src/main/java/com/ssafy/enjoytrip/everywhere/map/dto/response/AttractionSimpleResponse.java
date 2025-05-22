@@ -7,7 +7,12 @@ public record AttractionSimpleResponse(
         String title,
         Integer contentTypeId,
         Double latitude,
-        Double longitude
+        Double longitude,
+        Integer areaCode,
+        Integer siGunGuCode,
+        Integer mapLevel,
+        String tel,
+        String address
 ) {
     public static AttractionSimpleResponse from(Attraction attraction) {
         return new AttractionSimpleResponse(
@@ -15,7 +20,12 @@ public record AttractionSimpleResponse(
                 attraction.getTitle(),
                 attraction.getContentTypeId(),
                 attraction.getLatitude(),
-                attraction.getLongitude()
+                attraction.getLongitude(),
+                attraction.getAreaCode(),
+                attraction.getSiGunGuCode(),
+                attraction.getMapLevel(),
+                attraction.getTel(),
+                attraction.getAddress()
         );
     }
 }
