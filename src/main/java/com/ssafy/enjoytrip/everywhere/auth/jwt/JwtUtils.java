@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.auth.jwt;
 
 import java.security.Key;
+import java.util.Date;
 
 import io.jsonwebtoken.Claims;
 import lombok.Getter;
@@ -47,5 +48,12 @@ public class JwtUtils {
 		return claims.get(JwtConstants.CLAIM_NAME.value(), String.class);
 	}
 
-
+	public Date getExpiration(String token) {
+		return Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody()
+				.getExpiration();
+	}
 }

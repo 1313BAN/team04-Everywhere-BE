@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.everywhere.board.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -42,24 +43,20 @@ public class BoardController {
 
 	@PostMapping
 	public ApiResponse<BoardDetailResponse> create(@Valid @ModelAttribute BoardCreateRequest request,
-		@RequestHeader("Authorization") String token) {
-		String userId = jwtUtils.getUserId(token);
+												   @AuthenticationPrincipal(expression = "username") String userId) {
 		return ApiResponse.success(service.create(request, userId));
 	}
 
 	@PutMapping("/{id}")
 	@Transactional
-	public ApiResponse<BoardDetailResponse> update(@PathVariable Long id,
-		@ModelAttribute BoardModifyRequest request,
-		@RequestHeader("Authorization") String token) {
-		String userId = jwtUtils.getUserId(token);
+	public ApiResponse<BoardDetailResponse> update(@PathVariable Long id, @ModelAttribute BoardModifyRequest request,
+												   @AuthenticationPrincipal(expression = "username") String userId) {
 		return ApiResponse.success(service.update(id, request, userId));
 	}
 
 	@DeleteMapping("/{id}")
 	public ApiResponse<Void> delete(@PathVariable Long id,
-		@RequestHeader("Authorization") String token) {
-		String userId = jwtUtils.getUserId(token);
+									@AuthenticationPrincipal(expression = "username") String userId) {
 		service.delete(id, userId);
 		return ApiResponse.success();
 	}

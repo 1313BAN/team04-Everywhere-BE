@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.everywhere.board.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -19,4 +20,5 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
 
 	@Query("SELECT b.writer.userId FROM Board b WHERE b.id = :id")
 	String findWriterUserIdByBoardId(@Param("id") Long id);
+	List<Board> findByWriter_UserId(String userId);
 }

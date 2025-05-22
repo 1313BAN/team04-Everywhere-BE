@@ -10,10 +10,8 @@ import com.ssafy.enjoytrip.everywhere.common.exception.ApiException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import com.ssafy.enjoytrip.everywhere.auth.dto.request.LoginRequest;
 import com.ssafy.enjoytrip.everywhere.auth.dto.response.LoginResponse;
@@ -45,23 +43,18 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
-		String bearer = request.getHeader(JwtConstants.AUTH_HEADER.value());
-		String token = tokenResolver.resolve(bearer);
+	public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal(expression = "username") String userId,
+													@RequestHeader("Authorization") String header) {
+		String token = tokenResolver.resolve(header);
 
 		if (token == null) {
 			throw new ApiException(ErrorCode.TOKEN_INVALID);
 		}
 
-		Date expiration = Jwts.parserBuilder()
-				.setSigningKey(jwtUtils.getKey())
-				.build()
-				.parseClaimsJws(token)
-				.getBody()
-				.getExpiration();
-
+		Date expiration = jwtUtils.getExpiration(token);
 		blacklistService.blacklist(token, expiration);
 
 		return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_LOGOUT));
 	}
+
 }
