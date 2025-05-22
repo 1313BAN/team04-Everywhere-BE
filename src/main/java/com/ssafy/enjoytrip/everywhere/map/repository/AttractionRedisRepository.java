@@ -9,9 +9,10 @@ import java.util.List;
 public interface AttractionRedisRepository {
 
     List<AttractionRedis> findAll();
-    List<AttractionRedis> findByContentTypeId(Integer contentTypeId);
+    List<AttractionRedis> findByContentType(String contentType);
     List<AttractionRedis> findByCategory(String categoryCode);
     List<AttractionRedis> searchByKeywordEmbedding(String keyword); // 내부에서 벡터화 및 KNN 수행
     List<AttractionRedis> findByRegion(Integer areaCode, Integer siGunGuCode);
+    List<AttractionRedis> findByAreaCode(Integer areaCode);
 
 }

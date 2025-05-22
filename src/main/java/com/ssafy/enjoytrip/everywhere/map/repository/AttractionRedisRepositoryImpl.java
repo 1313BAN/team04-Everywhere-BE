@@ -33,7 +33,6 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
             dto.setTitle(getString(map.get("title")));
             dto.setSiGunGuName(getString(map.get("si_gun_gu_name")));
             dto.setCategory(getString(map.get("category")));
-            dto.setContentTypeId(parseInt((String) map.get("content_type_id")));
             dto.setAreaCode(parseInt((String) map.get("area_code")));
             dto.setSiGunGuCode(parseInt((String) map.get("si_gun_gu_code")));
             String embeddingRaw = (String) map.get("embedding");
@@ -70,9 +69,9 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
     }
 
     @Override
-    public List<AttractionRedis> findByContentTypeId(Integer contentTypeId) {
+    public List<AttractionRedis> findByContentType(String contentType) {
         return findAll().stream()
-                .filter(attraction -> Objects.equals(attraction.getContentTypeId(), contentTypeId))
+                .filter(attraction -> Objects.equals(attraction.getContentType(), contentType))
                 .collect(Collectors.toList());
     }
 
@@ -80,6 +79,13 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
     public List<AttractionRedis> findByCategory(String categoryCode) {
         return findAll().stream()
                 .filter(attraction -> categoryCode.equalsIgnoreCase(attraction.getCategory()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AttractionRedis> findByAreaCode(Integer areaCode) {
+        return findAll().stream()
+                .filter(attraction -> Objects.equals(attraction.getAreaCode(), areaCode))
                 .collect(Collectors.toList());
     }
 

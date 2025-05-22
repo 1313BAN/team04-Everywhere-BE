@@ -25,29 +25,36 @@ public class MapRedisController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
     }
 
-    @GetMapping("/redis/{contentTypeId}")
+    @GetMapping("/{contentTypeId}")
     public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByContentTypeFromRedis(
             @PathVariable Integer contentTypeId) {
         List<AttractionSimpleResponse> result = mapService.getByContentTypeFromRedis(contentTypeId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_BY_TYPE, result));
     }
 
-    @GetMapping("/redis/category/{categoryCode}")
+    @GetMapping("/category/{categoryCode}")
     public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByCategoryFromRedis(
             @PathVariable String categoryCode) {
         List<AttractionSimpleResponse> result = mapService.getByCategoryFromRedis(categoryCode);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
     }
 
-    @GetMapping("/redis/keyword")
+    @GetMapping("/keyword")
     public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByKeywordFromRedis(
             @RequestParam String keyword) {
         List<AttractionSimpleResponse> result = mapService.searchByKeywordInRedis(keyword);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
     }
 
-    @GetMapping("/redis/region/{areaCode}/{siGunGuCode}")
-    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByRegionFromRedis(
+    @GetMapping("/region/{areaCode}")
+    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByAreaCodeOnly(
+            @PathVariable Integer areaCode) {
+        List<AttractionSimpleResponse> result = mapService.getByRegionFromRedis(areaCode, null);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
+    }
+
+    @GetMapping("/region/{areaCode}/{siGunGuCode}")
+    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByAreaCodeAndSiGunGu(
             @PathVariable Integer areaCode,
             @PathVariable Integer siGunGuCode) {
         List<AttractionSimpleResponse> result = mapService.getByRegionFromRedis(areaCode, siGunGuCode);

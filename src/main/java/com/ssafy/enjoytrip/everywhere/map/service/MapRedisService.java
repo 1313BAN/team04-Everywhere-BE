@@ -28,8 +28,8 @@ public class MapRedisService {
     /**
      * Redis에서 contentTypeId 기준 필터
      */
-    public List<AttractionSimpleResponse> getByContentTypeFromRedis(Integer contentTypeId) {
-        return attractionRedisRepository.findByContentTypeId(contentTypeId).stream()
+    public List<AttractionSimpleResponse> getByContentTypeFromRedis(String contentType) {
+        return attractionRedisRepository.findByContentType(contentType).stream()
                 .map(attractionMapper::toSimpleResponse)
                 .toList();
     }
@@ -58,6 +58,11 @@ public class MapRedisService {
      */
     public List<AttractionSimpleResponse> getByRegionFromRedis(Integer areaCode, Integer siGunGuCode) {
         return attractionRedisRepository.findByRegion(areaCode, siGunGuCode).stream()
+                .map(attractionMapper::toSimpleResponse)
+                .toList();
+    }
+    public List<AttractionSimpleResponse> getByAreaFromRedis(Integer areaCode) {
+        return attractionRedisRepository.findByAreaCode(areaCode).stream()
                 .map(attractionMapper::toSimpleResponse)
                 .toList();
     }
