@@ -27,7 +27,7 @@ public class MapRedisController {
 
     @GetMapping("/{contentTypeId}")
     public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByContentTypeFromRedis(
-            @PathVariable Integer contentTypeId) {
+            @PathVariable String contentTypeId) {
         List<AttractionSimpleResponse> result = mapService.getByContentTypeFromRedis(contentTypeId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_BY_TYPE, result));
     }
