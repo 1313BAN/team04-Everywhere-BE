@@ -1,11 +1,10 @@
 package com.ssafy.enjoytrip.everywhere.user.controller;
 
+import com.ssafy.enjoytrip.everywhere.user.dto.response.ProfileResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
 import com.ssafy.enjoytrip.everywhere.user.dto.request.SignupRequest;
@@ -24,5 +23,11 @@ public class UserController {
 	public ResponseEntity<ApiResponse<Void>> signup(@RequestBody SignupRequest request) {
 		userService.signup(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success());
+	}
+
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<ProfileResponse>> getUserProfile(@AuthenticationPrincipal(expression = "username") String userId) {
+		ProfileResponse response = userService.getProfile(userId);
+		return ResponseEntity.ok(ApiResponse.success(response));
 	}
 }
