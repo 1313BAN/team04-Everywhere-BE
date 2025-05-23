@@ -1,5 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.user.service;
 
+import com.ssafy.enjoytrip.everywhere.board.dto.response.BoardListResponse;
+import com.ssafy.enjoytrip.everywhere.board.dto.response.BoardSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.board.entity.Board;
 import com.ssafy.enjoytrip.everywhere.board.repository.BoardRepository;
 import com.ssafy.enjoytrip.everywhere.user.dto.response.ProfileResponse;
@@ -33,6 +35,13 @@ public class UserService {
 		userRepository.save(userEntity);
 	}
 
+	@Transactional
+	public ProfileResponse updateNickname(String userId, String newNickname) {
+		UserEntity user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+		user.updateNickname(newNickname);
+		return profileMapper.toResponse(user, boardRepository.findByWriter_UserId(userId));
+	}
+
 	private void validateDuplicatedUserId(String userId) {
 		if (userRepository.existsByUserId(userId)) {
 			throw new ApiException(ErrorCode.DUPLICATED_USER_ID);
@@ -41,10 +50,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public ProfileResponse getProfile(String userId) {
-		UserEntity user = userRepository.findById(userId)
-				.orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-		List<Board> boards = boardRepository.findByWriter_UserId(userId);
-
-		return profileMapper.toResponse(user, boards);
+		UserEntity user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+		return profileMapper.toResponse(user, boardRepository.findByWriter_UserId(userId));
 	}
 }
