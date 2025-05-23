@@ -7,10 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 
-public interface UserRepository extends
-	JpaRepository<UserEntity, String> {
+public interface UserRepository extends JpaRepository<UserEntity, String> {
 	boolean existsByUserId(String userId);
-
 	@Modifying
 	@Query("update UserEntity u set u.refreshToken = :refreshToken where u.userId = :userId")
 	void updateRefreshToken(@Param("userId") String userId, @Param("refreshToken") String refreshToken);

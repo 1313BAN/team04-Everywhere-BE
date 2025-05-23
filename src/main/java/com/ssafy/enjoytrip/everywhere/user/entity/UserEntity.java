@@ -14,10 +14,12 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "users")
 @Getter
+@DynamicUpdate
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity extends BaseEntity {
@@ -47,4 +49,7 @@ public class UserEntity extends BaseEntity {
 		this.role = role;
 	}
 
+    public void updateNickname(String newNickname) {
+		this.nickname = newNickname;
+    }
 }

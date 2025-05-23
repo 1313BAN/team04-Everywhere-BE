@@ -5,6 +5,11 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
   datasource:
     url: jdbc:mysql://localhost:3306/enjoytrip
     username: ssafy
