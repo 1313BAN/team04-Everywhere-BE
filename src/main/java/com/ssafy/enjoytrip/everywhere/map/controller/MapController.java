@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/map")
 @RequiredArgsConstructor
@@ -21,6 +19,12 @@ public class MapController {
     public ApiResponse<AttractionsResponse> getAllAttractions() {
         AttractionsResponse attractions = mapService.getAllAttractions();
         return ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, attractions);
+    }
+
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<ApiResponse<AttractionsResponse>> searchByKeyword(@PathVariable("keyword") String keyword) {
+        AttractionsResponse attractions = mapService.searchByKeyword(keyword);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, attractions));
     }
 
     @GetMapping("/{contentTypeId}")
