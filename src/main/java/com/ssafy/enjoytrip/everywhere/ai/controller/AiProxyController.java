@@ -1,6 +1,8 @@
 package com.ssafy.enjoytrip.everywhere.ai.controller;
 
 
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
 import com.ssafy.enjoytrip.everywhere.auth.security.CustomUserDetails;
 import com.ssafy.enjoytrip.everywhere.history.dto.request.SearchRequest;
 import com.ssafy.enjoytrip.everywhere.history.service.HistoryService;
@@ -11,6 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,8 +32,6 @@ public class AiProxyController {
 
     /**
      * 사용자가 검색한 최근 5개 검색어를 이용한 추천
-     * @param userDetails
-     * @return
      */
     @GetMapping("/keywords")
     public ResponseEntity<List<Long>> getKeywordBasedRecommendations(
@@ -51,10 +52,12 @@ public class AiProxyController {
         return ResponseEntity.ok(recommended);
     }
 
+    /**
+     * 사용자가 찜한 최근 5개 장소를 이용한 장소 추천
+     */
     @GetMapping("/hotplaces")
     public ResponseEntity<List<Long>> getHotplaceBasedRecommendations(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-
         String userId = userDetails.getUsername();
 
         // ✅ 사용자의 찜 목록 (title 기반 키워드 추출)
@@ -76,6 +79,28 @@ public class AiProxyController {
 
         return ResponseEntity.ok(recommended);
     }
+
+    /**
+     * 사용자 근방 n KM 내의 장소 추천
+     */
+    @GetMapping("/location")
+    public ResponseEntity<List<Long>> getCurrentLocation(@RequestBody LocationRequest locationRequest) {
+        double latitude = locationRequest.getLatitude();
+        double longitude = locationRequest.getLongitude();
+
+        LocationSearchRequest request = new LocationSearchRequest(latitude, longitude, 5);
+
+        List<Long> recommended = webClient.post()
+                .uri("/api/ai/location")
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .block();
+
+        return ResponseEntity.ok(recommended);
+    }
+
+
 }
 
 
