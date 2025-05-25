@@ -14,11 +14,16 @@ import com.ssafy.enjoytrip.everywhere.board.entity.Board;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Integer> {
-	Page<Board> findByWriterUserId(String userId, Pageable pageable);
+	@Query("SELECT b FROM Board b JOIN FETCH b.writer")
+	List<Board> findAllWithWriter();
 
 	Optional<Board> findById(Long id);
 
 	@Query("SELECT b.writer.userId FROM Board b WHERE b.id = :id")
 	String findWriterUserIdByBoardId(@Param("id") Long id);
 	List<Board> findByWriter_UserId(String userId);
+
+	@Query("SELECT b FROM Board b JOIN FETCH b.writer LEFT JOIN FETCH b.imageUrls WHERE b.id = :id")
+	Optional<Board> findByIdWithWriter(@Param("id") Long id);
+
 }
