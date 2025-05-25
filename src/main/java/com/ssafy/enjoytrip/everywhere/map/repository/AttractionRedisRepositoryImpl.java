@@ -19,7 +19,6 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
 
 
     private final RedisTemplate<String, String> redisTemplate;
-//    private final ObjectMapper objectMapper;
 
     private AttractionRedis getAttraction(String key) {
         Map<Object, Object> map = redisTemplate.opsForHash().entries(key);

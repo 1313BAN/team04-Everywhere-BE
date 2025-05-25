@@ -31,6 +31,5 @@ public class HistoryController {
         String userId = userDetails.getUsername();
         return ResponseEntity.ok(historyService.getRecentKeywords(userId));
     }
-
 }
 

@@ -10,7 +10,7 @@ public class AiConfig {
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:7070") // 기본 도메인
+                .baseUrl("http://localhost:7071") // 기본 도메인
                 .build();
     }
 }

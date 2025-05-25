@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeywordQueryRequest {
+public class SearchRequest {
     private List<String> keywords;
 }

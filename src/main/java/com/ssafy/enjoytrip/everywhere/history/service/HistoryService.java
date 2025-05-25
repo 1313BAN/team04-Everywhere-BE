@@ -1,9 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.history.service;
 
-import com.ssafy.enjoytrip.everywhere.history.dto.request.KeywordQueryRequest;
 import com.ssafy.enjoytrip.everywhere.history.repository.HistoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -22,17 +20,6 @@ public class HistoryService {
 
     public List<String> getRecentKeywords(String userId) {
         return historyRepository.getRecentKeywords(userId);
-    }
-
-    public List<Long> getRecommendedContentIds(List<String> keywords) {
-        KeywordQueryRequest request = new KeywordQueryRequest(keywords);
-
-        return webClient.post()
-                .uri("/api/ai/keyword")
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
-                .block();
     }
 
 }
