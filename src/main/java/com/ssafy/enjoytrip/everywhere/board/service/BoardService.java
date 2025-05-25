@@ -1,6 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.board.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import com.ssafy.enjoytrip.everywhere.board.dto.request.BoardCreateRequest;
 import com.ssafy.enjoytrip.everywhere.board.dto.request.BoardModifyRequest;
 import com.ssafy.enjoytrip.everywhere.board.dto.response.BoardDetailResponse;
 import com.ssafy.enjoytrip.everywhere.board.dto.response.BoardListResponse;
+import com.ssafy.enjoytrip.everywhere.board.dto.response.BoardSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.board.entity.Board;
 import com.ssafy.enjoytrip.everywhere.board.mapper.BoardMapper;
 import com.ssafy.enjoytrip.everywhere.board.repository.BoardRepository;
@@ -25,26 +27,53 @@ public class BoardService {
 	private final UserRepository userRepository;
 	private final BoardRepository boardRepository;
 	private final ImageUploadService imageUploader;
-	private final BoardMapper mapper;
 
 	public BoardListResponse findAll() {
-		return BoardMapper.toList(boardRepository.findAll());
+		List<Board> boards = boardRepository.findAllWithWriter();
+		List<BoardSimpleResponse> simpleResponses = boards.stream()
+			.map(board -> new BoardSimpleResponse(
+				board.getId(),
+				board.getTitle(),
+				board.getWriter().getNickname(),
+				board.getCreatedAt()
+			)).collect(Collectors.toList());
+		return new BoardListResponse(simpleResponses);
 	}
 
 	public BoardDetailResponse findById(Long id) {
-		Board board = boardRepository.findById(id)
+		Board board = boardRepository.findByIdWithWriter(id)
 			.orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
-		return mapper.toDetail(board);
+		return new BoardDetailResponse(
+			board.getId(),
+			board.getTitle(),
+			board.getContent(),
+			board.getWriter().getNickname(),
+			board.getImageUrls(),
+			board.getCreatedAt()
+		);
 	}
 
 	public BoardDetailResponse create(BoardCreateRequest request, String tokenUserId) {
 		UserEntity writer = getUserOrThrow(tokenUserId);
 		List<String> uploadedUrls = imageUploader.upload(request.images());
 
-		Board board = mapper.toEntity(request, writer, uploadedUrls);
+		Board board = Board.builder()
+			.title(request.title())
+			.content(request.content())
+			.writer(writer)
+			.imageUrls(uploadedUrls)
+			.build();
+
 		boardRepository.save(board);
 
-		return mapper.toDetail(board);
+		return new BoardDetailResponse(
+			board.getId(),
+			board.getTitle(),
+			board.getContent(),
+			board.getWriter().getNickname(),
+			board.getImageUrls(),
+			board.getCreatedAt()
+		);
 	}
 
 	private UserEntity getUserOrThrow(String userId) {
@@ -53,7 +82,7 @@ public class BoardService {
 	}
 
 	public BoardDetailResponse update(Long id, BoardModifyRequest request, String userId) {
-		Board board = boardRepository.findById(id)
+		Board board = boardRepository.findByIdWithWriter(id)
 			.orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
 		String writerId = boardRepository.findWriterUserIdByBoardId(id);
@@ -63,11 +92,19 @@ public class BoardService {
 
 		List<String> urls = imageUploader.upload(request.images());
 		board.update(request.title(), request.content(), urls);
-		return mapper.toDetail(board);
+
+		return new BoardDetailResponse(
+			board.getId(),
+			board.getTitle(),
+			board.getContent(),
+			board.getWriter().getNickname(),
+			board.getImageUrls(),
+			board.getCreatedAt()
+		);
 	}
 
 	public void delete(Long id, String userId) {
-		Board board = boardRepository.findById(id)
+		Board board = boardRepository.findByIdWithWriter(id)
 			.orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
 		UserEntity writer = getUserOrThrow(userId);
