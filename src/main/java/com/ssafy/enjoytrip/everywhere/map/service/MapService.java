@@ -1,8 +1,6 @@
 package com.ssafy.enjoytrip.everywhere.map.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionRedisResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.mapper.AttractionMapper;
@@ -13,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,34 +73,4 @@ public class MapService {
                         .toList()
         );
     }
-
-    /**
-     *
-     * vue 테스트를 위한 더미 값 반환
-     */
-    public AttractionsResponse getAllAttractionsFromCache() {
-        Map<Object, Object> cached = redisTemplate.opsForHash().entries("attractions:hash");
-        List<AttractionSimpleResponse> result = new ArrayList<>();
-
-        for (Object value : cached.values()) {
-            AttractionRedisResponse dto = objectMapper.convertValue(value, AttractionRedisResponse.class);
-            result.add(new AttractionSimpleResponse(
-                    dto.getContentId(),
-                    dto.getTitle(),
-                    0, // contentTypeId 없음
-                    dto.getLatitude(),
-                    dto.getLongitude(),
-                    0, 0, 0, // areaCode, siGunGuCode, mapLevel 없음
-                    null,
-                    dto.getAddress(),
-                    dto.getFirstImage(),
-                    null, // secondImage 없음
-                    dto.getCategory()
-            ));
-        }
-
-        return new AttractionsResponse(result);
-    }
-
-
 }
