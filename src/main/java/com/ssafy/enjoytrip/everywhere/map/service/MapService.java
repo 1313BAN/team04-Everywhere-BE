@@ -55,6 +55,18 @@ public class MapService {
         return limit;
     }
 
+    public AttractionsResponse getAttractionsByBounds(String swLatLng, String neLatLng) {
+        LatLng sw = LatLng.fromString(swLatLng);
+        LatLng ne = LatLng.fromString(neLatLng);
+
+        return new AttractionsResponse(
+                attractionRepository.findWithinBounds(sw.lat(), ne.lat(), sw.lng(), ne.lng())
+                        .stream()
+                        .map(attractionMapper::toSimpleResponse)
+                        .toList()
+        );
+    }
+
     public AttractionsResponse getAttractionsByCategory(String category) {
         return new AttractionsResponse(
                 attractionRepository.findByCategory(category).stream()
