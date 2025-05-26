@@ -1,5 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.map.service;
 
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.entity.AttractionRedis;
@@ -39,5 +41,9 @@ public class MapRedisService {
 
     public List<AttractionSimpleResponse> getByAreaCode(String areaName) {
         return attractionRedisRepository.findByAreaCode(areaName);
+    }
+
+    public List<AttractionSimpleResponse> getNearBy(LocationSearchRequest locationRequest) {
+        return attractionRedisRepository.getNearBy(locationRequest);
     }
 }

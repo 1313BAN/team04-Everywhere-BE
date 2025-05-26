@@ -1,5 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.map.repository;
 
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.entity.AttractionRedis;
@@ -18,6 +20,6 @@ public interface AttractionRedisRepository {
 //    Document searchByKeywordEmbedding(String keyword); // 내부에서 벡터화 및 KNN 수행
 //    Document findByRegion(Integer areaCode, Integer siGunGuCode);
     List<AttractionSimpleResponse>  findByAreaCode(String areaName);
-
+    List<AttractionSimpleResponse> getNearBy(LocationSearchRequest locationRequest);
 //    AttractionsResponse findAttractionsByIds(List<Long> contentIds);
 }

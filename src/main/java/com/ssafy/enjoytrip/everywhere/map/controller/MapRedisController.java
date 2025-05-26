@@ -1,16 +1,14 @@
 package com.ssafy.enjoytrip.everywhere.map.controller;
 
-import com.ssafy.enjoytrip.everywhere.common.constants.SuccessCode;
-import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.request.AttractionRequest;
 import com.ssafy.enjoytrip.everywhere.map.service.MapRedisService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -55,5 +53,17 @@ public class MapRedisController {
         AttractionSimpleResponse result = mapService.getByContentId(id);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/location")
+    public ResponseEntity<List<AttractionSimpleResponse>> getNearBy(@RequestBody LocationRequest locationRequest) {
+        double latitude = locationRequest.getLatitude();
+        double longitude = locationRequest.getLongitude();
+
+        LocationSearchRequest request = new LocationSearchRequest(longitude, latitude,5);
+
+        List<AttractionSimpleResponse> result = mapService.getNearBy(request);
+        return ResponseEntity.ok(result);
+    }
+
 
 }

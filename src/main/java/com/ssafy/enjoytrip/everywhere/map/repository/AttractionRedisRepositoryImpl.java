@@ -1,5 +1,7 @@
 package com.ssafy.enjoytrip.everywhere.map.repository;
 
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
+import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import io.redisearch.Document;
 import io.redisearch.Query;
@@ -58,6 +60,20 @@ public class AttractionRedisRepositoryImpl implements AttractionRedisRepository 
         SearchResult result = client.search(query);
         return toResponseList(result);
     }
+
+    public List<AttractionSimpleResponse> getNearBy(LocationSearchRequest locationRequest) {
+        String geoQuery = String.format("@location:[%.6f %.6f %.1f km]",
+                locationRequest.getLongitude(),
+                locationRequest.getLatitude(),
+                locationRequest.getRadiuskm());
+
+        System.out.println("geoQuery: " + geoQuery);
+        Query query = new Query(geoQuery).limit(0, 100); // 최대 100개
+        SearchResult result = client.search(query);
+
+        return toResponseList(result);
+    }
+
 
     private String escape(String value) {
         return value.replaceAll("([,{}\\[\\]\\(\\)\\|\"@:\\-])", "\\\\$1");
