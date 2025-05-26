@@ -29,6 +29,16 @@ public interface AttractionRepository extends JpaRepository<Attraction, Long> {
             Pageable pageable
     );
 
+    @Query("SELECT a FROM Attraction a " +
+            "WHERE a.latitude BETWEEN :swLat AND :neLat " +
+            "AND a.longitude BETWEEN :swLng AND :neLng")
+    List<Attraction> findWithinBounds(
+            @Param("swLat") double swLat,
+            @Param("neLat") double neLat,
+            @Param("swLng") double swLng,
+            @Param("neLng") double neLng
+    );
+
     @Query("SELECT a FROM Attraction a WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Attraction> findByTitleContaining(@Param("keyword") String keyword);
 }

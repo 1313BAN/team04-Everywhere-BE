@@ -43,4 +43,11 @@ public class MapController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_IN_BOUNDS, attractions));
     }
 
+    @GetMapping(params = {"swLatLng", "neLatLng"})
+    public ResponseEntity<ApiResponse<AttractionsResponse>> getAttractionsInBounds(@RequestParam("swLatLng") String swLatLng,
+                                                                                   @RequestParam("neLatLng") String neLatLng) {
+        AttractionsResponse attractions = mapService.getAttractionsByBounds(swLatLng, neLatLng);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_IN_BOUNDS, attractions));
+    }
+
 }
