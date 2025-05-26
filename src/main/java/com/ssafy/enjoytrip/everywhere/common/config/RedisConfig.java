@@ -2,23 +2,24 @@ package com.ssafy.enjoytrip.everywhere.common.config;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configurable
 public class RedisConfig {
+
     @Bean
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
-
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-        // 키와 값 모두 문자열로 처리
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new StringRedisSerializer());
-
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
     }
+
 }
