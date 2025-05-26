@@ -10,7 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HistoryRepositoryImpl implements HistoryRepository {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> userRedisTemplate;
 
     private String getKey(String userId) {
         return "history:" + userId;
@@ -19,12 +19,12 @@ public class HistoryRepositoryImpl implements HistoryRepository {
     @Override
     public void saveSearchKeyword(String userId, String keyword) {
         String key = getKey(userId);
-        redisTemplate.opsForList().leftPush(key, keyword);
-        redisTemplate.opsForList().trim(key, 0, 4); // 최신 5개 유지
+        userRedisTemplate.opsForList().leftPush(key, keyword);
+        userRedisTemplate.opsForList().trim(key, 0, 4); // 최신 5개 유지
     }
 
     @Override
     public List<String> getRecentKeywords(String userId) {
-        return redisTemplate.opsForList().range(getKey(userId), 0, 4);
+        return userRedisTemplate.opsForList().range(getKey(userId), 0, 4);
     }
 }

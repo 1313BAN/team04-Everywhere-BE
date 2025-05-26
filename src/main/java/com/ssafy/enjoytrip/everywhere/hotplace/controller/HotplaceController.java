@@ -20,7 +20,7 @@ public class HotplaceController {
     private final Integer TOP_N = 10;
     private final HotplaceService hotplaceService;
     private final MapService mapService;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> userRedisTemplate;
 
 
     @PostMapping("/{attractionId}")
@@ -64,7 +64,7 @@ public class HotplaceController {
             @PathVariable Long attractionId) {
 
         String userId = userDetails.getUsername();
-        boolean exists = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember("hotplace:" + userId, attractionId.toString()));
+        boolean exists = Boolean.TRUE.equals(userRedisTemplate.opsForSet().isMember("hotplace:" + userId, attractionId.toString()));
         return ResponseEntity.ok(exists);
     }
 

@@ -4,11 +4,13 @@ import com.ssafy.enjoytrip.everywhere.common.constants.SuccessCode;
 import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
+import com.ssafy.enjoytrip.everywhere.map.dto.response.request.AttractionRequest;
 import com.ssafy.enjoytrip.everywhere.map.service.MapRedisService;
-import com.ssafy.enjoytrip.everywhere.map.service.MapService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -20,45 +22,38 @@ public class MapRedisController {
     private final MapRedisService mapService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getAllFromRedis() {
-        List<AttractionSimpleResponse> result = mapService.getAllAttractionsFromRedis();
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
+    public  ResponseEntity<AttractionsResponse> attractions(){
+        List<AttractionSimpleResponse> results = mapService.getAll();
+        return ResponseEntity.ok(new AttractionsResponse(results));
     }
 
-    @GetMapping("/{contentTypeId}")
-    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByContentTypeFromRedis(
-            @PathVariable String contentTypeId) {
-        List<AttractionSimpleResponse> result = mapService.getByContentTypeFromRedis(contentTypeId);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_BY_TYPE, result));
+    @PostMapping("/areaName")
+    public ResponseEntity<AttractionsResponse> keywordFilter(@RequestBody AttractionRequest request) {
+        // ex. 서울, 인천 등등
+        String areaName = request.getQuery();
+        List<AttractionSimpleResponse> results = mapService.getByAreaCode(areaName);
+        return ResponseEntity.ok(new AttractionsResponse(results));
     }
 
-    @GetMapping("/category/{categoryCode}")
-    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByCategoryFromRedis(
-            @PathVariable String categoryCode) {
-        System.out.println("categoryCode:"+categoryCode);
-        List<AttractionSimpleResponse> result = mapService.getByCategoryFromRedis(categoryCode);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
+    @PostMapping("/category")
+    public ResponseEntity<AttractionsResponse> categoryFilter(@RequestBody AttractionRequest request) {
+        String category = request.getQuery(); // 카테고리명도 keyword 필드로 받는다고 가정
+        List<AttractionSimpleResponse> results = mapService.getByCategory(category);
+        return ResponseEntity.ok(new AttractionsResponse(results));
     }
 
-    @PostMapping("/keyword")
-    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByKeywordFromRedis(
-            @RequestParam String keyword) {
-        List<AttractionSimpleResponse> result = mapService.searchByKeywordInRedis(keyword);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
+    @PostMapping("/contentType")
+    public ResponseEntity<AttractionsResponse> contentTypeFilter(@RequestBody AttractionRequest request) {
+        String typeName = request.getQuery();
+        List<AttractionSimpleResponse> results = mapService.getByContentType(typeName);
+        return ResponseEntity.ok(new AttractionsResponse(results));
     }
 
-    @GetMapping("/region/{areaCode}")
-    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByAreaCodeOnly(
-            @PathVariable Integer areaCode) {
-        List<AttractionSimpleResponse> result = mapService.getByRegionFromRedis(areaCode, null);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
+    @PostMapping("/contentId")
+    public ResponseEntity<AttractionSimpleResponse> getById(@RequestBody AttractionRequest request) {
+        long id = Long.parseLong(request.getQuery());  // contentId도 keyword 필드로 받음
+        AttractionSimpleResponse result = mapService.getByContentId(id);
+        return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/region/{areaCode}/{siGunGuCode}")
-    public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByAreaCodeAndSiGunGu(
-            @PathVariable Integer areaCode,
-            @PathVariable Integer siGunGuCode) {
-        List<AttractionSimpleResponse> result = mapService.getByRegionFromRedis(areaCode, siGunGuCode);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
-    }
 }

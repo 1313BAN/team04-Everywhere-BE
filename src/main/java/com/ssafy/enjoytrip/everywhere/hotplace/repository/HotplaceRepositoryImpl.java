@@ -15,7 +15,7 @@ public class HotplaceRepositoryImpl implements HotplaceRepository {
 
     private final String KEY = "hotplace:";
     private final String RANK_KEY = "hotplace:ranking";
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> userRedisTemplate;
 
     private String getKey(String userId) {
         return KEY + userId;
@@ -23,29 +23,29 @@ public class HotplaceRepositoryImpl implements HotplaceRepository {
 
     @Override
     public void addHotplace(String userId, Long attractionId) {
-        redisTemplate.opsForSet().add(getKey(userId), attractionId.toString());
+        userRedisTemplate.opsForSet().add(getKey(userId), attractionId.toString());
     }
 
     @Override
     public void removeHotplace(String userId, Long attractionId) {
-        redisTemplate.opsForSet().remove(getKey(userId), attractionId.toString());
+        userRedisTemplate.opsForSet().remove(getKey(userId), attractionId.toString());
     }
 
     @Override
     public List<Long> getHotplaceIdsByUser(String userId) {
-        Set<String> ids = redisTemplate.opsForSet().members(getKey(userId));
+        Set<String> ids = userRedisTemplate.opsForSet().members(getKey(userId));
         if (ids == null) return Collections.emptyList();
         return ids.stream().map(Long::parseLong).collect(Collectors.toList());
     }
 
     @Override
     public void increaseScore(Long attractionId) {
-        redisTemplate.opsForZSet().incrementScore(RANK_KEY, attractionId.toString(), 1.0);
+        userRedisTemplate.opsForZSet().incrementScore(RANK_KEY, attractionId.toString(), 1.0);
     }
 
     @Override
     public List<Long> getTopHotplaces(int limit) {
-        Set<String> ids = redisTemplate.opsForZSet().reverseRange(RANK_KEY, 0, limit - 1);
+        Set<String> ids = userRedisTemplate.opsForZSet().reverseRange(RANK_KEY, 0, limit - 1);
         if (ids == null) return Collections.emptyList();
         return ids.stream().map(Long::parseLong).collect(Collectors.toList());
     }
@@ -53,7 +53,7 @@ public class HotplaceRepositoryImpl implements HotplaceRepository {
     @Override
     public boolean existsHotplace(String userId, Long attractionId) {
         return Boolean.TRUE.equals(
-                redisTemplate.opsForSet().isMember(KEY + userId, attractionId.toString())
+                userRedisTemplate.opsForSet().isMember(KEY + userId, attractionId.toString())
         );
     }
 

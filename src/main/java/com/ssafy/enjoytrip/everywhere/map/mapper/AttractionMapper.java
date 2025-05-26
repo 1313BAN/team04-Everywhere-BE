@@ -11,7 +11,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AttractionMapper {
-
     AttractionSimpleResponse toSimpleResponse(Attraction attraction);
-    AttractionSimpleResponse toSimpleResponse(AttractionRedis redis);    // Redis용 ✅
+//    AttractionSimpleResponse toSimpleResponse(AttractionRedis attraction);
 }

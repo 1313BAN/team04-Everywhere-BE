@@ -22,8 +22,14 @@ spring:
     redis:
       repositories:
         enabled: true
-      host: localhost
-      port: 6380 # 80 : everywhere-user-redis || 79 : everywhere-redis
+      place:
+        host: localhost
+        port: 6379 # 80 : everywhere-user-redis || 79 : everywhere-redis
+        index: idx:attraction
+      user:
+        host: localhost
+        port: 6380
+        index: idx:route
       timeout: 5000 # 연결 타임아웃 (ms)
       lettuce:
         pool:

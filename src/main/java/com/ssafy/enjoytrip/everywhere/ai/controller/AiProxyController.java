@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -39,7 +36,6 @@ public class AiProxyController {
 
         String userId = userDetails.getUsername();
         List<String> keywords = historyService.getRecentKeywords(userId);
-        // todo: 위 키워드로 쿼리 생성
 
         SearchRequest request = new SearchRequest(keywords);
         List<Long> recommended = webClient.post()
@@ -83,7 +79,7 @@ public class AiProxyController {
     /**
      * 사용자 근방 n KM 내의 장소 추천
      */
-    @GetMapping("/location")
+    @PostMapping("/location")
     public ResponseEntity<List<Long>> getCurrentLocation(@RequestBody LocationRequest locationRequest) {
         double latitude = locationRequest.getLatitude();
         double longitude = locationRequest.getLongitude();

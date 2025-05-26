@@ -25,7 +25,7 @@ public class ChatService {
     @Value("${spring.ai.openai.api-key}")
     private String OPENAI_API_KEY;
     private static final String KEY_PREFIX = "chat_history:";
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> userRedisTemplate;
 
     public MyChatResponse chat(MyChatRequest request) {
         String userKey = KEY_PREFIX + request.userId();
@@ -56,7 +56,7 @@ public class ChatService {
     }
 
     private List<ChatMessage> getChatHistory(String userKey) {
-        List<String> rawMessages = redisTemplate.opsForList().range(userKey, 0, -1);
+        List<String> rawMessages = userRedisTemplate.opsForList().range(userKey, 0, -1);
         if (rawMessages == null) return new ArrayList<>();
 
         return rawMessages.stream()
@@ -76,12 +76,12 @@ public class ChatService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(message);
-            redisTemplate.opsForList().rightPush(userKey, json);
+            userRedisTemplate.opsForList().rightPush(userKey, json);
 
             // TTL이 설정되지 않은 경우만 expire 설정
-            Long ttl = redisTemplate.getExpire(userKey);
+            Long ttl = userRedisTemplate.getExpire(userKey);
             if (ttl == null || ttl == -1) {
-                redisTemplate.expire(userKey, Duration.ofDays(1));
+                userRedisTemplate.expire(userKey, Duration.ofDays(1));
             }
         } catch (Exception e) {
             e.printStackTrace();
