@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface AttractionRepository extends JpaRepository<Attraction, Long> {
-    List<Attraction> findByContentTypeId(Integer contentTypeId);
+    List<Attraction> findByCategory(String category);
 
     @Query("SELECT new com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse(" +
             "a.contentId, a.title, a.contentTypeId, a.latitude, a.longitude, " +
