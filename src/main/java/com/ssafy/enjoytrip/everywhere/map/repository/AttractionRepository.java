@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -31,4 +30,6 @@ public interface AttractionRepository extends JpaRepository<Attraction, Long> {
 
     @Query("SELECT a FROM Attraction a WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Attraction> findByTitleContaining(@Param("keyword") String keyword);
+
+    List<Attraction> findByContentIdIn(List<Long> contentIds);
 }

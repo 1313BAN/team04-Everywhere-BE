@@ -3,7 +3,11 @@ package com.ssafy.enjoytrip.everywhere.map.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.enjoytrip.everywhere.map.entity.AttractionRedis;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.domain.geo.Metrics;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -23,7 +27,8 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
 
     private AttractionRedis getAttraction(String key) {
         Map<Object, Object> map = redisTemplate.opsForHash().entries(key);
-        if (map == null || map.isEmpty()) return null;
+        System.out.println(map.toString());
+        if (map.isEmpty()) return null;
 
         try {
             AttractionRedis dto = new AttractionRedis();
@@ -40,6 +45,7 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
                 byte[] bytes = embeddingRaw.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
                 dto.setEmbedding(byteArrayToFloatArray(bytes));
             }
+//            System.out.println(dto.toString());
             return dto;
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,10 +67,23 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
     @Override
     public List<AttractionRedis> findAll() {
         Set<String> keys = Objects.requireNonNull(redisTemplate.keys(KEY_PREFIX + "*"));
-        System.out.println("keys: " + keys);
         return keys.stream()
                 .map(this::getAttraction)
                 .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    public List<AttractionRedis> nearBy(long lat, long lon) {
+        redisTemplate.opsForGeo().radius("attractions", new Circle(
+                new Point(lat, lon),
+                new Distance(5, Metrics.KILOMETERS)
+        ));
+        return new ArrayList<>();
+    }
+
+    public List<AttractionRedis> findById(long contentId) {
+        return findAll().stream()
+                .filter(attraction -> Objects.equals(attraction.getContentId(), contentId))
                 .collect(Collectors.toList());
     }
 
@@ -77,6 +96,7 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
 
     @Override
     public List<AttractionRedis> findByCategory(String categoryCode) {
+        System.out.println("impl");
         return findAll().stream()
                 .filter(attraction -> categoryCode.equalsIgnoreCase(attraction.getCategory()))
                 .collect(Collectors.toList());
@@ -102,24 +122,7 @@ public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository
         // TODO: 1. 키워드를 벡터로 임베딩
         // TODO: 2. Redis 벡터 필드에 대해 KNN 검색 (벡터 유사도)
         // ⚠️ 일반 Java에서는 구현 어려움 -> Python 서버와 연동 추천
-        return new ArrayList<>(); // 임시 반환
+        return new ArrayList<>();
     }
-
-    /**
-     * Redis에 저장된 단일 attraction 가져오기
-     */
-//    private AttractionRedis getAttraction(String key) {
-//        Map<Object, Object> map = redisTemplate.opsForHash().entries(key);
-//        if (map == null || map.isEmpty()) return null;
-//
-//        try {
-//            // Map을 JSON으로 직렬화 후 객체로 역직렬화
-//            String json = objectMapper.writeValueAsString(map);
-//            return objectMapper.readValue(json, AttractionRedis.class);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 
 }

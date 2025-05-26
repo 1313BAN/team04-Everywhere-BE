@@ -35,11 +35,12 @@ public class MapRedisController {
     @GetMapping("/category/{categoryCode}")
     public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByCategoryFromRedis(
             @PathVariable String categoryCode) {
+        System.out.println("categoryCode:"+categoryCode);
         List<AttractionSimpleResponse> result = mapService.getByCategoryFromRedis(categoryCode);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, result));
     }
 
-    @GetMapping("/keyword")
+    @PostMapping("/keyword")
     public ResponseEntity<ApiResponse<List<AttractionSimpleResponse>>> getByKeywordFromRedis(
             @RequestParam String keyword) {
         List<AttractionSimpleResponse> result = mapService.searchByKeywordInRedis(keyword);

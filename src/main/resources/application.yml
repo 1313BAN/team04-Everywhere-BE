@@ -23,13 +23,17 @@ spring:
       repositories:
         enabled: true
       host: localhost
-      port: 6379
+      port: 6380 # 80 : everywhere-user-redis || 79 : everywhere-redis
       timeout: 5000 # 연결 타임아웃 (ms)
       lettuce:
         pool:
           max-active: 10
           max-idle: 5
           min-idle: 1
+  ai:
+    openai:
+      api-key: "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"
+
 
 jwt:
   secret: c3NhZnlqd3RzZWNyZXRrZXkxMjM0c3NhZnlqd3RzZWNyZXRrZXkxMjM0
@@ -41,3 +45,4 @@ logging:
 server:
   address: 0.0.0.0
   port: 8080
+

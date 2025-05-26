@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.everywhere.map.service;
 
+import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.mapper.AttractionMapper;
 import com.ssafy.enjoytrip.everywhere.map.repository.AttractionRepository;
@@ -7,6 +8,9 @@ import com.ssafy.enjoytrip.everywhere.map.util.LatLng;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +56,11 @@ public class MapService {
         else if (zoomLevel >= 10) limit = 100;
         else limit = 50;
         return limit;
+    }
+
+    public List<AttractionSimpleResponse> findByIds(List<Long> contentIds) {
+        return attractionRepository.findByContentIdIn(contentIds)
+                .stream().map(AttractionSimpleResponse::from)
+                .collect(Collectors.toList());
     }
 }
