@@ -83,27 +83,29 @@ public class MapService {
      */
     public AttractionsResponse getAllAttractionsFromCache() {
         Map<Object, Object> cached = redisTemplate.opsForHash().entries("attractions:hash");
-        List<AttractionSimpleResponse> result = new ArrayList<>();
 
-        for (Object value : cached.values()) {
-            AttractionRedisResponse dto = objectMapper.convertValue(value, AttractionRedisResponse.class);
-            result.add(new AttractionSimpleResponse(
-                    dto.getContentId(),
-                    dto.getTitle(),
-                    0, // contentTypeId 없음
-                    dto.getLatitude(),
-                    dto.getLongitude(),
-                    0, 0, 0, // areaCode, siGunGuCode, mapLevel 없음
-                    null,
-                    dto.getAddress(),
-                    dto.getFirstImage(),
-                    null, // secondImage 없음
-                    dto.getCategory()
-            ));
-        }
+        List<AttractionSimpleResponse> result = cached.values().stream()
+                .map(value -> {
+                    AttractionRedisResponse dto = (AttractionRedisResponse) value;
+                    return new AttractionSimpleResponse(
+                            dto.getContentId(),
+                            dto.getTitle(),
+                            0,
+                            dto.getLatitude(),
+                            dto.getLongitude(),
+                            0, 0, 0,
+                            null,
+                            dto.getAddress(),
+                            dto.getFirstImage(),
+                            null,
+                            dto.getCategory()
+                    );
+                })
+                .toList();
 
         return new AttractionsResponse(result);
     }
+
 
 
 }
