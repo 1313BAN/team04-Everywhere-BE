@@ -1,16 +1,15 @@
 package com.ssafy.enjoytrip.everywhere.map.repository;
 
-import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
 import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import io.redisearch.Document;
 import io.redisearch.Query;
 import io.redisearch.SearchResult;
 import io.redisearch.client.Client;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +37,19 @@ public class AttractionRedisRepositoryImpl implements AttractionRedisRepository 
         Document doc = client.getDocument("attraction:" + contentId);
         if (doc == null) return null;
         return AttractionSimpleResponse.toResponse(doc);
+    }
+
+    public List<AttractionSimpleResponse> findByContentIds(List<Long> contentIds) {
+        List<AttractionSimpleResponse> results = new ArrayList<>();
+
+        for (Long id : contentIds) {
+            Document doc = client.getDocument("attraction:" + id);
+            if (doc != null) {
+                results.add(AttractionSimpleResponse.toResponse(doc));
+            }
+        }
+
+        return results;
     }
 
     public List<AttractionSimpleResponse> findByCategory(String category) {
@@ -74,7 +86,6 @@ public class AttractionRedisRepositoryImpl implements AttractionRedisRepository 
         return toResponseList(result);
     }
 
-
     private String escape(String value) {
         return value.replaceAll("([,{}\\[\\]\\(\\)\\|\"@:\\-])", "\\\\$1");
     }
@@ -85,35 +96,5 @@ public class AttractionRedisRepositoryImpl implements AttractionRedisRepository 
                 .map(AttractionSimpleResponse::toResponse)
                 .collect(Collectors.toList());
     }
-
-//    public Optional<AttractionSimpleResponse> findAttractionById(String contentId) {
-//        String key = PREFIX + contentId;
-//        Map<Object, Object> data = placeRedisTemplate.opsForHash().entries(key);
-//
-//        if (data.isEmpty()) return Optional.empty();
-//
-//        try {
-//            return Optional.of(
-//                    new AttractionSimpleResponse(
-//                            Long.parseLong(contentId),
-//                            (String) data.getOrDefault("title", ""),
-//                            Integer.parseInt((String) data.getOrDefault("content_type_id", "0")),
-//                            Double.parseDouble(((String) data.getOrDefault("location", "0 0")).split(" ")[1]),
-//                            Double.parseDouble(((String) data.getOrDefault("location", "0 0")).split(" ")[0]),
-//                            Integer.parseInt((String) data.getOrDefault("area_code", "0")),
-//                            Integer.parseInt((String) data.getOrDefault("si_gun_gu_code", "0")),
-//                            Integer.parseInt((String) data.getOrDefault("map_level", "0")),
-//                            (String) data.getOrDefault("tel", ""),
-//                            (String) data.getOrDefault("addr1", ""),
-//                            (String) data.getOrDefault("first_image1", ""),
-//                            (String) data.getOrDefault("first_image2", "")
-//                    )
-//            );
-//        } catch (Exception e) {
-//            System.out.println("파씽 실패했는뎁쇼..?");
-//            return Optional.empty();
-//        }
-//    }
-
 
 }

@@ -21,5 +21,7 @@ public interface AttractionRedisRepository {
 //    Document findByRegion(Integer areaCode, Integer siGunGuCode);
     List<AttractionSimpleResponse>  findByAreaCode(String areaName);
     List<AttractionSimpleResponse> getNearBy(LocationSearchRequest locationRequest);
+
+    List<AttractionSimpleResponse> findByContentIds(List<Long> contentIds);
 //    AttractionsResponse findAttractionsByIds(List<Long> contentIds);
 }

@@ -36,19 +36,25 @@ public record AttractionSimpleResponse(
         );
     }
     public static AttractionSimpleResponse toResponse(Document doc) {
+        String location = getOrDefault(doc, "location", "0 0");
+        String[] coords = location.split(" ");
+        double longitude = safeParseDouble(coords[0], 0.0);
+        double latitude = safeParseDouble(coords[1], 0.0);
+
         return new AttractionSimpleResponse(
                 Long.parseLong(doc.getId().replace("attraction:", "")),
                 getOrDefault(doc, "title", ""),
-                safeParseInt(doc.get("content_type_id"), 0),
-                safeParseDouble(doc.get("latitude"), 0.0),
-                safeParseDouble(doc.get("longitude"), 0.0),
+                0, // content_type_id 없으므로 기본값
+                latitude,
+                longitude,
                 safeParseInt(doc.get("area_code"), 0),
                 safeParseInt(doc.get("si_gun_gu_code"), 0),
                 safeParseInt(doc.get("map_level"), 0),
                 getOrDefault(doc, "tel", ""),
-                getOrDefault(doc, "address", ""),
-                getOrDefault(doc, "first_image", ""),
-                getOrDefault(doc, "second_image", "")
+                getOrDefault(doc, "addr1", ""),
+                getOrDefault(doc, "first_image2", ""),
+                null,
+                getOrDefault(doc, "category_name", "")
         );
     }
 

@@ -27,6 +27,10 @@ public class MapRedisService {
         return attractionRedisRepository.findAll();
     }
 
+    public List<AttractionSimpleResponse> getByContentIds(List<Long> contentIds) {
+        return attractionRedisRepository.findByContentIds(contentIds);
+    }
+
     public AttractionSimpleResponse getByContentId(long contentId) {
         return attractionRedisRepository.findByContentId(contentId);
     }

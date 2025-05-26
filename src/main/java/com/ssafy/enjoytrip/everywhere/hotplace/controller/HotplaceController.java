@@ -3,7 +3,7 @@ package com.ssafy.enjoytrip.everywhere.hotplace.controller;
 import com.ssafy.enjoytrip.everywhere.auth.security.CustomUserDetails;
 import com.ssafy.enjoytrip.everywhere.hotplace.service.HotplaceService;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
-import com.ssafy.enjoytrip.everywhere.map.service.MapService;
+import com.ssafy.enjoytrip.everywhere.map.service.MapRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class HotplaceController {
 
     private final Integer TOP_N = 10;
     private final HotplaceService hotplaceService;
-    private final MapService mapService;
+    private final MapRedisService mapService;
     private final RedisTemplate<String, String> userRedisTemplate;
 
 
@@ -54,7 +54,7 @@ public class HotplaceController {
     @GetMapping("/top")
     public ResponseEntity<List<AttractionSimpleResponse>> getTopHotplaces() {
         List<Long> topIds = hotplaceService.getTopHotplaces(TOP_N);
-        List<AttractionSimpleResponse> responses = mapService.findByIds(topIds);
+        List<AttractionSimpleResponse> responses = mapService.getByContentIds(topIds);
         return ResponseEntity.ok(responses); // ✅ 이미 DTO이므로 map 필요 없음
     }
 
