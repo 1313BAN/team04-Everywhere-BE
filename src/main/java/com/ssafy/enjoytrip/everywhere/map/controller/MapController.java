@@ -50,4 +50,10 @@ public class MapController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_IN_BOUNDS, attractions));
     }
 
+    @GetMapping("/cache")
+    public ResponseEntity<ApiResponse<AttractionsResponse>> getAttractionsFromRedis() {
+        AttractionsResponse attractions = mapService.getAllAttractionsFromCache();
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_IN_BOUNDS, attractions));
+    }
+
 }
