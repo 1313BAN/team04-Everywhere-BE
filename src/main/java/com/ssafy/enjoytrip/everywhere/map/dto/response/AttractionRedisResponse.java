@@ -8,7 +8,6 @@ import lombok.Getter;
 public class AttractionRedisResponse {
     private Long contentId;
     private String title;
-    private Integer contentTypeId;
     private Double latitude;
     private Double longitude;
     private String address;

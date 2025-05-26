@@ -2,6 +2,7 @@ package com.ssafy.enjoytrip.everywhere.map.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionRedisResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.mapper.AttractionMapper;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -75,18 +77,33 @@ public class MapService {
         );
     }
 
+    /**
+     *
+     * vue 테스트를 위한 더미 값 반환
+     */
     public AttractionsResponse getAllAttractionsFromCache() {
-        List<String> rawList = redisTemplate.opsForList().range("attractions:all", 0, -1);
+        Map<Object, Object> cached = redisTemplate.opsForHash().entries("attractions:hash");
         List<AttractionSimpleResponse> result = new ArrayList<>();
 
-        for (String json : rawList) {
-            try {
-                result.add(objectMapper.readValue(json, AttractionSimpleResponse.class));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+        for (Object value : cached.values()) {
+            AttractionRedisResponse dto = objectMapper.convertValue(value, AttractionRedisResponse.class);
+            result.add(new AttractionSimpleResponse(
+                    dto.getContentId(),
+                    dto.getTitle(),
+                    0, // contentTypeId 없음
+                    dto.getLatitude(),
+                    dto.getLongitude(),
+                    0, 0, 0, // areaCode, siGunGuCode, mapLevel 없음
+                    null,
+                    dto.getAddress(),
+                    dto.getFirstImage(),
+                    null, // secondImage 없음
+                    dto.getCategory()
+            ));
         }
+
         return new AttractionsResponse(result);
     }
+
 
 }

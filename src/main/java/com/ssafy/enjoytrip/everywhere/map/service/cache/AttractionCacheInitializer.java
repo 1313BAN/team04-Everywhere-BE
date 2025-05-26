@@ -7,7 +7,12 @@ import com.ssafy.enjoytrip.everywhere.map.entity.Attraction;
 import com.ssafy.enjoytrip.everywhere.map.repository.AttractionRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +22,7 @@ import java.util.List;
 public class AttractionCacheInitializer {
 
     private final AttractionRepository attractionRepository;
-    private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @PostConstruct
     public void cacheAttractions() {
@@ -28,7 +32,6 @@ public class AttractionCacheInitializer {
             AttractionRedisResponse dto = new AttractionRedisResponse(
                     attraction.getContentId(),
                     attraction.getTitle(),
-                    attraction.getContentTypeId(),
                     attraction.getLatitude(),
                     attraction.getLongitude(),
                     attraction.getAddress(),
@@ -36,14 +39,20 @@ public class AttractionCacheInitializer {
                     attraction.getCategory()
             );
 
-            try {
-                String json = objectMapper.writeValueAsString(dto);
-                redisTemplate.opsForList().rightPush("attractions:all", json);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            redisTemplate.opsForHash().put("attractions:hash", String.valueOf(dto.getContentId()), dto);
         }
 
-        System.out.println("✅ Redis attraction 캐싱 완료 (최적화 DTO)");
+        System.out.println("✅ Redis attraction 캐싱 완료 (Hash + 필드 축소)");
+    }
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(factory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        return template;
     }
 }
