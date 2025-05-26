@@ -12,11 +12,11 @@ import java.util.List;
 
 @Repository
 public interface AttractionRepository extends JpaRepository<Attraction, Long> {
-    List<Attraction> findByContentTypeId(Integer contentTypeId);
+    List<Attraction> findByCategory(String category);
 
     @Query("SELECT new com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse(" +
             "a.contentId, a.title, a.contentTypeId, a.latitude, a.longitude, " +
-            "a.areaCode, a.siGunGuCode, a.mapLevel, a.tel, a.address, a.firstImage, a.secondImage) " +
+            "a.areaCode, a.siGunGuCode, a.mapLevel, a.tel, a.address, a.firstImage, a.secondImage, a.category) " +
             "FROM Attraction a " +
             "WHERE a.latitude BETWEEN :swLat AND :neLat " +
             "AND a.longitude BETWEEN :swLng AND :neLng")
@@ -26,6 +26,16 @@ public interface AttractionRepository extends JpaRepository<Attraction, Long> {
             @Param("swLng") double swLng,
             @Param("neLng") double neLng,
             Pageable pageable
+    );
+
+    @Query("SELECT a FROM Attraction a " +
+            "WHERE a.latitude BETWEEN :swLat AND :neLat " +
+            "AND a.longitude BETWEEN :swLng AND :neLng")
+    List<Attraction> findWithinBounds(
+            @Param("swLat") double swLat,
+            @Param("neLat") double neLat,
+            @Param("swLng") double swLng,
+            @Param("neLng") double neLng
     );
 
     @Query("SELECT a FROM Attraction a WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")

@@ -15,7 +15,8 @@ public record AttractionSimpleResponse(
         String tel,
         String address,
         String firstImage,
-        String secondImage
+        String secondImage,
+        String category
 ) {
     public static AttractionSimpleResponse from(Attraction attraction) {
         return new AttractionSimpleResponse(
@@ -30,7 +31,8 @@ public record AttractionSimpleResponse(
                 attraction.getTel(),
                 attraction.getAddress(),
                 attraction.getFirstImage(),
-                attraction.getSecondImage()
+                attraction.getSecondImage(),
+                attraction.getCategory()
         );
     }
     public static AttractionSimpleResponse toResponse(Document doc) {

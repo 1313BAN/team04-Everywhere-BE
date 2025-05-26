@@ -35,5 +35,8 @@ public class Attraction {
 
     @Column(name ="first_image2")
     private String secondImage;
+
+    @Column(name="category")
+    private String category;
 }
 

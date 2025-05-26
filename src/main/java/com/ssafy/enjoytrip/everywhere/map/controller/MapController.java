@@ -1,7 +1,9 @@
 package com.ssafy.enjoytrip.everywhere.map.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.enjoytrip.everywhere.common.constants.SuccessCode;
 import com.ssafy.enjoytrip.everywhere.common.dto.response.ApiResponse;
+import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.service.MapService;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +29,10 @@ public class MapController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS, attractions));
     }
 
-    @GetMapping("/{contentTypeId}")
-    public ResponseEntity<ApiResponse<AttractionsResponse>> getByContentTypeId(@PathVariable("contentTypeId") Integer contentTypeId) {
-        AttractionsResponse attractions = mapService.getAttractionsByContentType(contentTypeId);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_BY_TYPE, attractions));
+    @GetMapping("/category/{category}")
+    public ResponseEntity<ApiResponse<AttractionsResponse>> getByCategory(@PathVariable("category") String category) {
+        AttractionsResponse attractions = mapService.getAttractionsByCategory(category);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_BY_CATEGORY, attractions));
     }
 
     @GetMapping(params = {"level", "swLatLng", "neLatLng"})
@@ -38,6 +40,19 @@ public class MapController {
                                                                                    @RequestParam("swLatLng") String swLatLng,
                                                                                    @RequestParam("neLatLng") String neLatLng) {
         AttractionsResponse attractions = mapService.getAttractionsByBoundsWithZoom(swLatLng, neLatLng, Integer.parseInt(level));
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_IN_BOUNDS, attractions));
+    }
+
+    @GetMapping(params = {"swLatLng", "neLatLng"})
+    public ResponseEntity<ApiResponse<AttractionsResponse>> getAttractionsInBounds(@RequestParam("swLatLng") String swLatLng,
+                                                                                   @RequestParam("neLatLng") String neLatLng) {
+        AttractionsResponse attractions = mapService.getAttractionsByBounds(swLatLng, neLatLng);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_IN_BOUNDS, attractions));
+    }
+
+    @GetMapping("/cache")
+    public ResponseEntity<ApiResponse<AttractionsResponse>> getAttractionsFromRedis() {
+        AttractionsResponse attractions = mapService.getAllAttractionsFromCache();
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.SUCCESS_GET_ATTRACTIONS_IN_BOUNDS, attractions));
     }
 
