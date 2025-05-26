@@ -7,7 +7,9 @@ import com.ssafy.enjoytrip.everywhere.map.entity.Attraction;
 import com.ssafy.enjoytrip.everywhere.map.repository.AttractionRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -24,7 +26,7 @@ public class AttractionCacheInitializer {
     private final AttractionRepository attractionRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void cacheAttractions() {
         List<Attraction> attractions = attractionRepository.findAll();
 
