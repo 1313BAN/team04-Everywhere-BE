@@ -1,5 +1,6 @@
 package com.ssafy.enjoytrip.everywhere.board.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ import com.ssafy.enjoytrip.everywhere.user.entity.UserEntity;
 import com.ssafy.enjoytrip.everywhere.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -55,24 +57,25 @@ public class BoardService {
 
 	public BoardDetailResponse create(BoardCreateRequest request, String tokenUserId) {
 		UserEntity writer = getUserOrThrow(tokenUserId);
-		List<String> uploadedUrls = imageUploader.upload(request.images());
+		List<MultipartFile> images = request.images() != null ? request.images() : Collections.emptyList();
+		List<String> uploadedUrls = imageUploader.upload(images);
 
 		Board board = Board.builder()
-			.title(request.title())
-			.content(request.content())
-			.writer(writer)
-			.imageUrls(uploadedUrls)
-			.build();
+				.title(request.title())
+				.content(request.content())
+				.writer(writer)
+				.imageUrls(uploadedUrls)
+				.build();
 
 		boardRepository.save(board);
 
 		return new BoardDetailResponse(
-			board.getId(),
-			board.getTitle(),
-			board.getContent(),
-			board.getWriter().getNickname(),
-			board.getImageUrls(),
-			board.getCreatedAt()
+				board.getId(),
+				board.getTitle(),
+				board.getContent(),
+				board.getWriter().getNickname(),
+				board.getImageUrls(),
+				board.getCreatedAt()
 		);
 	}
 
