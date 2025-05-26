@@ -40,6 +40,12 @@ public class MapService {
         );
     }
 
+    public AttractionsResponse searchByKeyword(String keyword) {
+        return new AttractionsResponse(attractionRepository.findByTitleContaining(keyword).stream()
+                .map(attractionMapper::toSimpleResponse)
+                .toList());
+    }
+
     private static int selectLimit(int zoomLevel) {
         int limit;
         if (zoomLevel >= 15) limit = 300;
