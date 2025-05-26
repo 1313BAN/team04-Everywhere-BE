@@ -1,23 +1,19 @@
 package com.ssafy.enjoytrip.everywhere.map.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
 import com.ssafy.enjoytrip.everywhere.map.mapper.AttractionMapper;
 import com.ssafy.enjoytrip.everywhere.map.repository.AttractionRepository;
 import com.ssafy.enjoytrip.everywhere.map.util.LatLng;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class MapService {
-    private final StringRedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final AttractionRepository attractionRepository;
     private final AttractionMapper attractionMapper;
