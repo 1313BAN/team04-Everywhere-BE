@@ -13,11 +13,11 @@ import java.util.List;
 
 @Repository
 public interface AttractionRepository extends JpaRepository<Attraction, Long> {
-    List<Attraction> findByContentTypeId(Integer contentTypeId);
+    List<Attraction> findByCategory(String category);
 
     @Query("SELECT new com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse(" +
             "a.contentId, a.title, a.contentTypeId, a.latitude, a.longitude, " +
-            "a.areaCode, a.siGunGuCode, a.mapLevel, a.tel, a.address, a.firstImage, a.secondImage) " +
+            "a.areaCode, a.siGunGuCode, a.mapLevel, a.tel, a.address, a.firstImage, a.secondImage, a.category) " +
             "FROM Attraction a " +
             "WHERE a.latitude BETWEEN :swLat AND :neLat " +
             "AND a.longitude BETWEEN :swLng AND :neLng")
