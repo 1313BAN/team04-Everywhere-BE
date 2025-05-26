@@ -74,4 +74,19 @@ public class MapService {
                         .toList()
         );
     }
+
+    public AttractionsResponse getAllAttractionsFromCache() {
+        List<String> rawList = redisTemplate.opsForList().range("attractions:all", 0, -1);
+        List<AttractionSimpleResponse> result = new ArrayList<>();
+
+        for (String json : rawList) {
+            try {
+                result.add(objectMapper.readValue(json, AttractionSimpleResponse.class));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        return new AttractionsResponse(result);
+    }
+
 }
