@@ -2,6 +2,7 @@ package com.ssafy.enjoytrip.everywhere.history.controller;
 
 import com.ssafy.enjoytrip.everywhere.auth.security.CustomUserDetails;
 import com.ssafy.enjoytrip.everywhere.history.service.HistoryService;
+import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +31,12 @@ public class HistoryController {
     public ResponseEntity<List<String>> getRecentKeywords(@AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = userDetails.getUsername();
         return ResponseEntity.ok(historyService.getRecentKeywords(userId));
+    }
+
+    @GetMapping("/personal")
+    public ResponseEntity<List<AttractionSimpleResponse>> historyFitAttraction(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        String userId = userDetails.getUsername();
+        return ResponseEntity.ok(historyService.historyFitAttraction(userId));
     }
 }
 

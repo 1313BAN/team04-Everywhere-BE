@@ -68,8 +68,6 @@ public class HotplaceController {
         return ResponseEntity.ok(exists);
     }
 
-<<<<<<< Updated upstream
-=======
     /**
      * 사용자가 찜한 최근 5개 장소를 이용한 장소 추천
      */
@@ -87,6 +85,4 @@ public class HotplaceController {
         List<AttractionSimpleResponse> result = mapService.searchByKeywordEmbedding(keywords.toString());
         return ResponseEntity.ok(result);
     }
-
->>>>>>> Stashed changes
 }
