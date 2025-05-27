@@ -19,7 +19,6 @@ public class Attraction {
     private Integer contentTypeId;
 
     private Double latitude;
-
     private Double longitude;
 
     private Integer areaCode;

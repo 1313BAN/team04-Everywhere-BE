@@ -24,11 +24,11 @@ spring:
         enabled: true
       place:
         host: localhost
-        port: 6379 # 80 : everywhere-user-redis || 79 : everywhere-redis
+        port: 6379 # 79 : everywhere-redis
         index: idx:attraction
       user:
         host: localhost
-        port: 6380
+        port: 6380 # 80 : everywhere-user-redis
         index: idx:route
       timeout: 5000 # 연결 타임아웃 (ms)
       lettuce:
@@ -39,7 +39,16 @@ spring:
   ai:
     openai:
       api-key: "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"
-
+    ollama:
+      chat:
+        enabled: true # true
+        options:
+          model: qwen:0.5b # qwen2.5:7b # llama2
+          temperature: 0.7
+#        model: llama2
+      base-url: "http://localhost:11434"
+      embedding:
+        enabled: false
 
 jwt:
   secret: c3NhZnlqd3RzZWNyZXRrZXkxMjM0c3NhZnlqd3RzZWNyZXRrZXkxMjM0

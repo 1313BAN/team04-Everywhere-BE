@@ -1,10 +1,8 @@
 package com.ssafy.enjoytrip.everywhere.map.controller;
 
-import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
-import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
+import com.ssafy.enjoytrip.everywhere.map.dto.request.*;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
-import com.ssafy.enjoytrip.everywhere.map.dto.response.request.AttractionRequest;
 import com.ssafy.enjoytrip.everywhere.map.service.MapRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -59,11 +57,26 @@ public class MapRedisController {
         double latitude = locationRequest.getLatitude();
         double longitude = locationRequest.getLongitude();
 
-        LocationSearchRequest request = new LocationSearchRequest(longitude, latitude,5);
+        LocationSearchRequest request = new LocationSearchRequest(longitude, latitude,1000);
 
         List<AttractionSimpleResponse> result = mapService.getNearBy(request);
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<List<AttractionSimpleResponse>> searchByKeywordEmbedding(@RequestBody AttractionRequest request) {
+        List<AttractionSimpleResponse> result = mapService.searchByKeywordEmbedding(request.getQuery());
+        return ResponseEntity.ok(result);
+    }
 
+    @PostMapping("/nearCategory")
+    public ResponseEntity<List<AttractionSimpleResponse>> NearByLocationAndCategory(@RequestBody NearAttractionSearchRequest nRequest) {
+        double latitude = nRequest.getLatitude();
+        double longitude = nRequest.getLongitude();
+
+        LocationSearchRequest request = new LocationSearchRequest(longitude, latitude,100);
+
+        List<AttractionSimpleResponse> result = mapService.getNearBy(request);
+        return ResponseEntity.ok(result);
+    }
 }

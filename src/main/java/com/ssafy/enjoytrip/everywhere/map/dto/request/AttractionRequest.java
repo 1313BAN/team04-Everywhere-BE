@@ -1,4 +1,4 @@
-package com.ssafy.enjoytrip.everywhere.map.dto.response.request;
+package com.ssafy.enjoytrip.everywhere.map.dto.request;
 
 import lombok.Data;
 import lombok.Getter;

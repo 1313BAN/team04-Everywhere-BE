@@ -68,4 +68,25 @@ public class HotplaceController {
         return ResponseEntity.ok(exists);
     }
 
+<<<<<<< Updated upstream
+=======
+    /**
+     * 사용자가 찜한 최근 5개 장소를 이용한 장소 추천
+     */
+    @GetMapping("/personal")
+    public ResponseEntity<List<AttractionSimpleResponse>> getHotplaceBasedRecommendations(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        String userId = userDetails.getUsername();
+
+        List<AttractionSimpleResponse> hotplaces = hotplaceService.getHotplaces(userId);
+        List<String> keywords = hotplaces.stream()
+                .map(AttractionSimpleResponse::title)
+                .limit(5)  // 최근 찜한 5개로 제한
+                .toList();
+
+        List<AttractionSimpleResponse> result = mapService.searchByKeywordEmbedding(keywords.toString());
+        return ResponseEntity.ok(result);
+    }
+
+>>>>>>> Stashed changes
 }

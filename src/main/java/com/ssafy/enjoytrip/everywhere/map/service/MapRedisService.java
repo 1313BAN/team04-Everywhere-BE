@@ -1,21 +1,13 @@
 package com.ssafy.enjoytrip.everywhere.map.service;
 
-import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationRequest;
-import com.ssafy.enjoytrip.everywhere.ai.dto.request.LocationSearchRequest;
+import com.ssafy.enjoytrip.everywhere.map.dto.request.LocationSearchRequest;
+import com.ssafy.enjoytrip.everywhere.map.dto.request.NearAttractionRequest;
 import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
-import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionsResponse;
-import com.ssafy.enjoytrip.everywhere.map.entity.AttractionRedis;
-import com.ssafy.enjoytrip.everywhere.map.mapper.AttractionMapper;
 import com.ssafy.enjoytrip.everywhere.map.repository.AttractionRedisRepository;
-import io.redisearch.Document;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +40,15 @@ public class MapRedisService {
     }
 
     public List<AttractionSimpleResponse> getNearBy(LocationSearchRequest locationRequest) {
-        return attractionRedisRepository.getNearBy(locationRequest);
+        return attractionRedisRepository.findNearBy(locationRequest);
     }
+
+    public List<AttractionSimpleResponse> searchByKeywordEmbedding(String keyword) {
+        return attractionRedisRepository.searchByKeywordEmbedding(keyword);
+    }
+
+    public List<AttractionSimpleResponse> findNearByLocationAndCategory(NearAttractionRequest request) {
+        return attractionRedisRepository.findNearByLocationAndCategory(request);
+    }
+
 }

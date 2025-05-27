@@ -1,91 +1,105 @@
 package com.ssafy.enjoytrip.everywhere.chat.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.enjoytrip.everywhere.chat.dto.request.MyChatRequest;
-import com.ssafy.enjoytrip.everywhere.chat.dto.response.MyChatResponse;
-import com.theokanning.openai.completion.chat.ChatCompletionRequest;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.service.OpenAiService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
-    @Value("${spring.ai.openai.api-key}")
-    private String OPENAI_API_KEY;
-    private static final String KEY_PREFIX = "chat_history:";
-    private final RedisTemplate<String, String> userRedisTemplate;
+    private final ChatModel chatModel;
 
-    public MyChatResponse chat(MyChatRequest request) {
-        String userKey = KEY_PREFIX + request.userId();
+    public String generateResponse(String userId, String userMessage) {
+        log.info("Generating response for user: {}, message: {}", userId, userMessage);
 
-        // 1. Redis에서 히스토리 가져오기
-        List<ChatMessage> history = getChatHistory(userKey);
+        // 한국어 맥락을 위한 시스템 프롬프트
+        String systemPrompt = """
+당신은 여행 전문가이다. 사용자의 질문에 친근한 톤의 한국어로 답변하여라.""";
 
-        // 2. 현재 메시지를 추가
-        ChatMessage userMessage = new ChatMessage("user", request.message());
-        history.add(userMessage);
+        PromptTemplate promptTemplate = new PromptTemplate("""
+{system_prompt}
+사용자 질문: {user_message}
+답변:""");
 
-        // 3. OpenAI 호출
-        OpenAiService service = new OpenAiService(OPENAI_API_KEY);
-        ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
-                .model("gpt-4o-mini")
-                .messages(history)
-                .build();
+        Prompt prompt = promptTemplate.create(Map.of(
+                "system_prompt", systemPrompt,
+                "user_message", userMessage
+        ));
 
-        String reply = service.createChatCompletion(completionRequest)
-                .getChoices().get(0).getMessage().getContent();
+        String response = chatModel.call(prompt).getResult().getOutput().getText();
 
-        // 4. 응답 메시지를 히스토리에 추가하고 저장
-        ChatMessage assistantMessage = new ChatMessage("assistant", reply);
-        saveChatMessage(userKey, userMessage);
-        saveChatMessage(userKey, assistantMessage);
-
-        return new MyChatResponse(reply);
+        return response;
     }
 
-    private List<ChatMessage> getChatHistory(String userKey) {
-        List<String> rawMessages = userRedisTemplate.opsForList().range(userKey, 0, -1);
-        if (rawMessages == null) return new ArrayList<>();
+    public String routeResponse(String userId, String routes, String restaurants) {
+        log.info("Generating response for user: {}, message: {}", userId, routes);
 
-        return rawMessages.stream()
-                .map(json -> {
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        return mapper.readValue(json, ChatMessage.class);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        // 한국어 맥락을 위한 시스템 프롬프트
+        String systemPrompt = """
+당신은 여행 경로 최적화 전문가이다.
+사용자는 여행하려는 장소들과 그 주변 식당 정보를 제공함
+각 장소와 식당은 이름(title)과 위도(latitude), 경도(longitude), content_id로 구성되며,
+당신의 임무는 사용자가 입력한 장소들의 위치 정보를 기반으로 최적의 여행 경로를 계산하는 것이다.
+여행 경로 답게 이동하는 중간에 "restaurants" 방문을 할 수 있어야 한다.
+최적화 기준은 이동 거리 최소화이다.
+
+반드시 여행지들의 content_id만으로 구성된 리스트를 반환해야 함에 주의.
+{출력 형식 예시}
+input:
+"attractions": [
+    {'name': "경복궁", 'latitude': 37.5796, 'longitude': 126.9770, 'content_id': 1001},
+    {'name': "남산타워", 'latitude': 37.5512, 'longitude': 126.9882, 'content_id': 1002},
+    {'name': "롯데월드", 'latitude': 37.5110, 'longitude': 127.0980, 'content_id': 1003}
+],
+"restaurants": [
+    {'name': "한옥집", 'latitude': 37.5789, 'longitude': 126.9765, 'content_id': 2001},
+    {'name': "타워레스토랑", 'latitude': 37.5511, 'longitude': 126.9880, 'content_id': 2002}
+]
+return: [1001, 1002, 1003]""";
+
+        PromptTemplate promptTemplate = new PromptTemplate("""
+{system_prompt}
+
+input:
+"attractions": [
+    {places}
+]
+"restaurants": [
+    {foods}
+]
+return:""");
+
+        Prompt prompt = promptTemplate.create(Map.of(
+                "system_prompt", systemPrompt,
+                "places", routes,
+                "foods", restaurants
+        ));
+
+        System.out.println("👍👍👍👍👍👍👍");
+        System.out.println(prompt.toString());
+
+        String response = chatModel.call(prompt).getResult().getOutput().getText();
+        log.info("Generated response for user: {}", userId);
+
+        return response;
     }
 
-    private void saveChatMessage(String userKey, ChatMessage message) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(message);
-            userRedisTemplate.opsForList().rightPush(userKey, json);
+    public String generateWithOptions(String userId, String userMessage, Double temperature, String model) {
+        log.info("Generating custom response for user: {}, model: {}, temperature: {}", userId, model, temperature);
 
-            // TTL이 설정되지 않은 경우만 expire 설정
-            Long ttl = userRedisTemplate.getExpire(userKey);
-            if (ttl == null || ttl == -1) {
-                userRedisTemplate.expire(userKey, Duration.ofDays(1));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        OllamaOptions options = new OllamaOptions();
+        options.setModel(model);
+        options.setTemperature(temperature);
+
+        Prompt prompt = new Prompt(userMessage, options);
+        return chatModel.call(prompt).getResult().getOutput().getText();
     }
 }
-
