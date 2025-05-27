@@ -55,9 +55,8 @@ public class BoardService {
 		);
 	}
 
-	public BoardDetailResponse create(BoardCreateRequest request, String tokenUserId) {
+	public BoardDetailResponse create(BoardCreateRequest request, List<MultipartFile> images, String tokenUserId) {
 		UserEntity writer = getUserOrThrow(tokenUserId);
-		List<MultipartFile> images = request.images() != null ? request.images() : Collections.emptyList();
 		List<String> uploadedUrls = imageUploader.upload(images);
 
 		Board board = Board.builder()
@@ -84,7 +83,7 @@ public class BoardService {
 			.orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 	}
 
-	public BoardDetailResponse update(Long id, BoardModifyRequest request, String userId) {
+	public BoardDetailResponse update(Long id, BoardModifyRequest request, List<MultipartFile> images, String userId) {
 		Board board = boardRepository.findByIdWithWriter(id)
 			.orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
@@ -93,7 +92,7 @@ public class BoardService {
 			throw new ApiException(ErrorCode.NON_VALIDATED_USER);
 		}
 
-		List<String> urls = imageUploader.upload(request.images());
+		List<String> urls = imageUploader.upload(images);
 		board.update(request.title(), request.content(), urls);
 
 		return new BoardDetailResponse(

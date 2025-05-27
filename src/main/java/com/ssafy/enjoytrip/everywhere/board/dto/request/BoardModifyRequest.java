@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record BoardModifyRequest(
 	String title,
-	String content,
-	List<MultipartFile> images
+	String content
 ) {
 }

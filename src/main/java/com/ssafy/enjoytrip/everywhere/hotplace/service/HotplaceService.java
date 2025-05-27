@@ -6,6 +6,9 @@ import com.ssafy.enjoytrip.everywhere.map.repository.AttractionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,11 +31,12 @@ public class HotplaceService {
     }
 
     public List<AttractionSimpleResponse> getHotplaces(String userId) {
-        List<Long> ids = hotplaceRepository.getHotplaceIdsByUser(userId);
-        return attractionRepository.findByContentIdIn(ids)
-                .stream()
-                .map(AttractionSimpleResponse::from)
-                .collect(Collectors.toList());
+    //     List<Long> ids = hotplaceRepository.getHotplaceIdsByUser(userId);
+    //     return attractionRepository.findByContentIdIn(ids)
+    //             .stream()
+    //             .map(AttractionSimpleResponse::from)
+    //             .collect(Collectors.toList());
+            return Collections.emptyList();
     }
 
     public void increaseScore(Long attractionId) {
