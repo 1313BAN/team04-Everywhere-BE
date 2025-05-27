@@ -19,7 +19,6 @@ public class Attraction {
     private Integer contentTypeId;
 
     private Double latitude;
-
     private Double longitude;
 
     private Integer areaCode;
@@ -35,5 +34,8 @@ public class Attraction {
 
     @Column(name ="first_image2")
     private String secondImage;
+
+    @Column(name="category")
+    private String category;
 }
 

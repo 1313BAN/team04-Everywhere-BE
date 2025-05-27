@@ -1,125 +1,146 @@
 package com.ssafy.enjoytrip.everywhere.map.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.enjoytrip.everywhere.map.entity.AttractionRedis;
+import com.ssafy.enjoytrip.everywhere.map.dto.request.LocationSearchRequest;
+import com.ssafy.enjoytrip.everywhere.ai.service.OpenAiEmbeddingClient;
+import com.ssafy.enjoytrip.everywhere.map.dto.request.NearAttractionRequest;
+import com.ssafy.enjoytrip.everywhere.map.dto.response.AttractionSimpleResponse;
+import io.redisearch.Document;
+import io.redisearch.Query;
+import io.redisearch.SearchResult;
+import io.redisearch.client.Client;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.lang.Integer.parseInt;
-import static java.lang.Long.parseLong;
-import static javax.swing.UIManager.getString;
 
 @Repository
 @RequiredArgsConstructor
-public class AttractionRedisRepositoryImpl implements  AttractionRedisRepository {
+public class AttractionRedisRepositoryImpl implements AttractionRedisRepository {
 
+    private final Client placeSearchClient;
+    private final OpenAiEmbeddingClient embeddingClient;
 
-    private final RedisTemplate<String, String> redisTemplate;
-//    private final ObjectMapper objectMapper;
+    public List<AttractionSimpleResponse> findAll() {
+        Query query = new Query("*")
+                .limit(0, 3000); // 최대 1000개까지만 조회
+        SearchResult result = placeSearchClient.search(query);
 
-    private AttractionRedis getAttraction(String key) {
-        Map<Object, Object> map = redisTemplate.opsForHash().entries(key);
-        if (map == null || map.isEmpty()) return null;
+        return result.docs.stream()
+                .map(AttractionSimpleResponse::toResponse)
+                .collect(Collectors.toList());
+    }
 
-        try {
-            AttractionRedis dto = new AttractionRedis();
+    public AttractionSimpleResponse findByContentId(Long contentId) {
+        Document doc = placeSearchClient.getDocument("attraction:" + contentId);
+        if (doc == null) return null;
+        return AttractionSimpleResponse.toResponse(doc);
+    }
 
-            dto.setContentId(parseLong((String) map.get("content_id")));
-            dto.setContentType(getString(map.get("content_type")));
-            dto.setTitle(getString(map.get("title")));
-            dto.setSiGunGuName(getString(map.get("si_gun_gu_name")));
-            dto.setCategory(getString(map.get("category")));
-            dto.setAreaCode(parseInt((String) map.get("area_code")));
-            dto.setSiGunGuCode(parseInt((String) map.get("si_gun_gu_code")));
-            String embeddingRaw = (String) map.get("embedding");
-            if (embeddingRaw != null) {
-                byte[] bytes = embeddingRaw.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
-                dto.setEmbedding(byteArrayToFloatArray(bytes));
+    public List<AttractionSimpleResponse> findByContentIds(List<Long> contentIds) {
+        List<AttractionSimpleResponse> results = new ArrayList<>();
+
+        for (Long id : contentIds) {
+            Document doc = placeSearchClient.getDocument("attraction:" + id);
+            if (doc != null) {
+                results.add(AttractionSimpleResponse.toResponse(doc));
             }
-            return dto;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+        return results;
     }
 
-    private float[] byteArrayToFloatArray(byte[] bytes) {
-        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(bytes).order(java.nio.ByteOrder.LITTLE_ENDIAN);
-        float[] floats = new float[bytes.length / 4];
-        for (int i = 0; i < floats.length; i++) {
-            floats[i] = buffer.getFloat();
+    @Override
+    public List<AttractionSimpleResponse> searchByKeywordEmbedding(String keyword) {
+        List<Float> embedding = embeddingClient.getEmbedding(keyword);
+        StringBuilder vectorBuilder = new StringBuilder();
+
+        for (Float f : embedding) {
+            vectorBuilder.append(f).append(" ");
         }
-        return floats;
+
+        String vectorStr = vectorBuilder.toString().trim(); // 공백으로 구분된 float 값
+        String queryStr =
+                String.format("*=>[KNN 10 @embedding VECTOR[%s] AS score] SORTBY score ASC RETURN 3 id title score", vectorStr);
+
+        Query query = new Query(queryStr);
+
+        SearchResult result = placeSearchClient.search(query);
+
+        return toResponseList(result);
     }
 
-    private static final String KEY_PREFIX = "attraction:";
+    public List<AttractionSimpleResponse> findByTitle(String keyword) {
+        String escaped = escape(keyword.split(" ")[0]);
+        System.out.println(escaped);
+        Query query = new Query("@title:%" + escaped + "%");
+        SearchResult result = placeSearchClient.search(query);
+        return toResponseList(result);
+    }
+
+    public List<AttractionSimpleResponse> findByCategory(String category) {
+        String escaped = escape(category);
+        Query query = new Query("@category_name:{" + escaped + "}");
+        SearchResult result = placeSearchClient.search(query);
+        return toResponseList(result);
+    }
+
+    public List<AttractionSimpleResponse> findByContentType(String typeName) {
+        String escaped = escape(typeName);
+        Query query = new Query("@content_type_name:{" + escaped + "}");
+        SearchResult result = placeSearchClient.search(query);
+        return toResponseList(result);
+    }
+
+    public List<AttractionSimpleResponse> findByAreaCode(String siGunGuLike) {
+        String escaped = escape(siGunGuLike);
+        Query query = new Query("@si_gun_gu_name:%" + escaped + "%");
+        SearchResult result = placeSearchClient.search(query);
+        return toResponseList(result);
+    }
+
+    public List<AttractionSimpleResponse> findNearBy(LocationSearchRequest locationRequest) {
+        String geoQuery = String.format("@location:[%.6f %.6f %.1f km]",
+                locationRequest.getLongitude(),
+                locationRequest.getLatitude(),
+                locationRequest.getRadiuskm());
+
+        Query query = new Query(geoQuery).limit(0, 200); // 최대 100개
+        SearchResult result = placeSearchClient.search(query);
+
+        return toResponseList(result);
+    }
 
     @Override
-    public List<AttractionRedis> findAll() {
-        Set<String> keys = Objects.requireNonNull(redisTemplate.keys(KEY_PREFIX + "*"));
-        System.out.println("keys: " + keys);
-        return keys.stream()
-                .map(this::getAttraction)
-                .filter(Objects::nonNull)
+    public  List<AttractionSimpleResponse> findNearByLocationAndCategory(NearAttractionRequest request) {
+        // 쿼리 escape
+        String escapedCategory = escape(request.getQuery());
+
+        // GEO 쿼리 구성: 반경 내 + 카테고리 매칭
+        String geoQuery = String.format("@location:[%.6f %.6f %.1f km] @category_name:{%s}",
+                request.getLongitude(),
+                request.getLatitude(),
+                request.getRadiuskm(),
+                escapedCategory
+        );
+
+        // Redisearch 질의 실행
+        Query query = new Query(geoQuery).limit(0, 200); // 최대 200개 제한
+        SearchResult result = placeSearchClient.search(query);
+
+        return toResponseList(result);
+    }
+
+    private String escape(String value) {
+        return value.replaceAll("([,{}\\[\\]\\(\\)\\|\"@:\\-])", "\\\\$1");
+    }
+
+    private List<AttractionSimpleResponse> toResponseList(SearchResult result) {
+        return result.docs
+                .stream()
+                .map(AttractionSimpleResponse::toResponse)
                 .collect(Collectors.toList());
     }
-
-    @Override
-    public List<AttractionRedis> findByContentType(String contentType) {
-        return findAll().stream()
-                .filter(attraction -> Objects.equals(attraction.getContentType(), contentType))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AttractionRedis> findByCategory(String categoryCode) {
-        return findAll().stream()
-                .filter(attraction -> categoryCode.equalsIgnoreCase(attraction.getCategory()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AttractionRedis> findByAreaCode(Integer areaCode) {
-        return findAll().stream()
-                .filter(attraction -> Objects.equals(attraction.getAreaCode(), areaCode))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AttractionRedis> findByRegion(Integer areaCode, Integer siGunGuCode) {
-        return findAll().stream()
-                .filter(attraction -> Objects.equals(attraction.getAreaCode(), areaCode) &&
-                        Objects.equals(attraction.getSiGunGuCode(), siGunGuCode))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AttractionRedis> searchByKeywordEmbedding(String keyword) {
-        // TODO: 1. 키워드를 벡터로 임베딩
-        // TODO: 2. Redis 벡터 필드에 대해 KNN 검색 (벡터 유사도)
-        // ⚠️ 일반 Java에서는 구현 어려움 -> Python 서버와 연동 추천
-        return new ArrayList<>(); // 임시 반환
-    }
-
-    /**
-     * Redis에 저장된 단일 attraction 가져오기
-     */
-//    private AttractionRedis getAttraction(String key) {
-//        Map<Object, Object> map = redisTemplate.opsForHash().entries(key);
-//        if (map == null || map.isEmpty()) return null;
-//
-//        try {
-//            // Map을 JSON으로 직렬화 후 객체로 역직렬화
-//            String json = objectMapper.writeValueAsString(map);
-//            return objectMapper.readValue(json, AttractionRedis.class);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 
 }

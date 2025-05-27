@@ -11,19 +11,15 @@ import java.io.Serializable;
 public class AttractionRedis implements Serializable {
 
     private Long contentId;
-    private String contentType;
-    private String category;
-
-    private float[] embedding;
-
     private String title;
-    private String siGunGuName;
+
+    private String contentTypeId;
+    private String category;
 
     private Integer areaCode;
     private Integer siGunGuCode;
 
     private String firstImage1;
-    private String firstImage2;
 
     private Integer mapLevel;
     private Double latitude;
@@ -31,8 +27,5 @@ public class AttractionRedis implements Serializable {
 
     private String tel;
     private String addr1;
-    private String addr2;
 
-//    private String homepage;
-//    private String overview;
 }
