@@ -41,4 +41,7 @@ public interface AttractionRepository extends JpaRepository<Attraction, Long> {
 
     @Query("SELECT a FROM Attraction a WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Attraction> findByTitleContaining(@Param("keyword") String keyword);
+
+    List<Attraction> findByContentIdIn(List<Long> contentIds);
+
 }

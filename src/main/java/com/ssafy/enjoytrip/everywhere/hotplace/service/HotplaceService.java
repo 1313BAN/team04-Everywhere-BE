@@ -31,12 +31,11 @@ public class HotplaceService {
     }
 
     public List<AttractionSimpleResponse> getHotplaces(String userId) {
-    //     List<Long> ids = hotplaceRepository.getHotplaceIdsByUser(userId);
-    //     return attractionRepository.findByContentIdIn(ids)
-    //             .stream()
-    //             .map(AttractionSimpleResponse::from)
-    //             .collect(Collectors.toList());
-            return Collections.emptyList();
+        List<Long> ids = hotplaceRepository.getHotplaceIdsByUser(userId);
+        return attractionRepository.findByContentIdIn(ids)
+                .stream()
+                .map(AttractionSimpleResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void increaseScore(Long attractionId) {
