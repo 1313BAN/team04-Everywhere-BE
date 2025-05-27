@@ -59,15 +59,18 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/redis.clients/jedis
 	implementation("redis.clients:jedis:3.7.0")
-//	implementation("redis.clients:jedis:6.0.0")
 	// https://mvnrepository.com/artifact/com.redislabs/jredisearch
 	implementation("com.redislabs:jredisearch:2.2.0")
 
-	//	implementation("org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-M6")
-	implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
+	// https://mvnrepository.com/artifact/com.theokanning.openai-gpt3-java/service
+	implementation("com.theokanning.openai-gpt3-java:service:0.18.2")
+	implementation("com.theokanning.openai-gpt3-java:api:0.18.2")
+	implementation("com.theokanning.openai-gpt3-java:client:0.18.2")
 
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	implementation platform("software.amazon.awssdk:bom:2.25.13")
+	implementation "software.amazon.awssdk:s3"
 }
 
 tasks.named('test') {
