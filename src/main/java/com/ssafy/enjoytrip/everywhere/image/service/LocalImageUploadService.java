@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+// @Service
 public class LocalImageUploadService implements ImageUploadService {
 
 	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/uploads/";
